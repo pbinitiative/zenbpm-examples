@@ -1,4 +1,4 @@
-package main
+package openai
 
 import (
 	"bytes"
@@ -8,27 +8,27 @@ import (
 	"log"
 	"text/template"
 
-	"github.com/sashabaranov/go-openai"
+	goopenai "github.com/sashabaranov/go-openai"
 )
 
-// AIResult represents the structured JSON response from OpenAI.
-type AIResult struct {
+// Service handles OpenAI API interactions.
+type Service struct {
+	client *goopenai.Client
+}
+
+// Result represents the expected JSON response from OpenAI.
+type Result struct {
 	Decision string  `json:"decision"`
 	Reason   *string `json:"reason"`
 }
 
-// OpenAIService wraps the OpenAI client for business-process validation.
-type OpenAIService struct {
-	client *openai.Client
+// NewService creates a new OpenAI service with the given API key.
+func NewService(apiKey string) *Service {
+	return &Service{client: goopenai.NewClient(apiKey)}
 }
 
-func NewOpenAIService(apiKey string) *OpenAIService {
-	return &OpenAIService{client: openai.NewClient(apiKey)}
-}
-
-// ProcessWithTemplate renders the prompt template with process variables,
-// sends it to GPT-4o-mini, and parses the JSON response.
-func (s *OpenAIService) ProcessWithTemplate(ctx context.Context, promptTemplate string, variables map[string]any) (*AIResult, error) {
+// ProcessWithTemplate applies variables to a prompt template and sends it to OpenAI.
+func (s *Service) ProcessWithTemplate(ctx context.Context, promptTemplate string, variables map[string]any) (*Result, error) {
 	tmpl, err := template.New("prompt").Parse(promptTemplate)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse template: %w", err)
@@ -40,17 +40,17 @@ func (s *OpenAIService) ProcessWithTemplate(ctx context.Context, promptTemplate 
 	}
 
 	prompt := buf.String()
-	log.Printf("[openai] Prompt: %s", prompt)
+	log.Printf("[openai-service] Generated prompt: %s", prompt)
 
-	resp, err := s.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
+	resp, err := s.client.CreateChatCompletion(ctx, goopenai.ChatCompletionRequest{
 		Model: "gpt-4o-mini",
-		Messages: []openai.ChatCompletionMessage{
+		Messages: []goopenai.ChatCompletionMessage{
 			{
-				Role:    openai.ChatMessageRoleSystem,
+				Role:    goopenai.ChatMessageRoleSystem,
 				Content: "You are a business process analyst. Always respond with valid JSON in the specified format only.",
 			},
 			{
-				Role:    openai.ChatMessageRoleUser,
+				Role:    goopenai.ChatMessageRoleUser,
 				Content: prompt,
 			},
 		},
@@ -65,7 +65,7 @@ func (s *OpenAIService) ProcessWithTemplate(ctx context.Context, promptTemplate 
 		return nil, fmt.Errorf("no response from OpenAI API")
 	}
 
-	var result AIResult
+	var result Result
 	if err := json.Unmarshal([]byte(resp.Choices[0].Message.Content), &result); err != nil {
 		return nil, fmt.Errorf("failed to parse OpenAI response as JSON: %w", err)
 	}

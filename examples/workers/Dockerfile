@@ -6,11 +6,11 @@ WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o log-worker .
+RUN CGO_ENABLED=0 GOOS=linux go build -o zenbpm-workers .
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
-COPY --from=builder /build/log-worker .
+COPY --from=builder /build/zenbpm-workers .
 USER 1001
-CMD ["./log-worker"]
+CMD ["./zenbpm-workers"]

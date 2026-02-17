@@ -5,8 +5,9 @@ The simplest possible ZenBPM example. A BPMN process with one service task handl
 ## What You'll Learn
 
 - How to deploy a BPMN process to ZenBPM
-- How to start a process instance with variables
+- How to start a process instance
 - How a service task delegates work to an external worker via gRPC
+- How input mappings set variables for a task
 
 ## Process
 
@@ -16,18 +17,13 @@ The simplest possible ZenBPM example. A BPMN process with one service task handl
              log-worker
 ```
 
-The service task creates a job of type `log-worker`. The worker picks it up, reads the `log` variable, and prints it.
+The service task uses an input mapping to set `log = "Hello, World!"` and creates a job of type `log-worker`. The worker picks it up, reads the `log` variable, and prints it.
 
 ## Run
 
 ```bash
+# From the repository root
 docker compose up -d
-```
-
-The process is deployed automatically. Check the deploy logs:
-
-```bash
-docker compose logs deploy
 ```
 
 ## Start a Process Instance
@@ -35,32 +31,27 @@ docker compose logs deploy
 Use the `processDefinitionKey` from the deploy logs:
 
 ```bash
+docker compose logs deploy
+```
+
+```bash
 curl -X POST http://localhost:8080/v1/process-instances \
   -H "Content-Type: application/json" \
-  -d '{
-    "processDefinitionKey": <KEY_FROM_DEPLOY>,
-    "variables": {"log": "Hello, ZenBPM!"}
-  }'
+  -d '{"processDefinitionKey": <KEY_FROM_DEPLOY>, "variables": {}}'
 ```
 
 The worker will log:
 
 ```
-[log-worker] Hello, ZenBPM!
+[log-worker] Hello, World!
 ```
 
 Check with:
 
 ```bash
-docker compose logs log-worker
+docker compose logs workers
 ```
 
 ## View in the UI
 
 Open http://localhost:9000 to see the deployed process definition and completed instance.
-
-## Clean Up
-
-```bash
-docker compose down
-```
