@@ -1,0 +1,11 @@
+# Override file to build engine and UI from local source.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
+services:
+  zenbpm:
+    build:
+      context: ../zenbpm
+      dockerfile: Dockerfile.workshop
+
+  zenbpm-ui:
+    build:
+      context: ../zenbpm-ui

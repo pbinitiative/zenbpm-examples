@@ -1,0 +1,31 @@
+include:
+  - ../../docker-compose.yml
+
+# Scaffold for the employee onboarding showcase.
+# Uncomment services as they are implemented.
+
+services: {}
+  # onboarding-backend:
+  #   build: ./backend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     ZENBPM_URL: http://zenbpm:8080
+  #   depends_on:
+  #     zenbpm:
+  #       condition: service_healthy
+
+  # onboarding-frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "5173:80"
+  #   depends_on:
+  #     - onboarding-backend
+
+  # onboarding-workers:
+  #   build: ./workers
+  #   environment:
+  #     ZENBPM_GRPC_ADDR: zenbpm:9090
+  #   depends_on:
+  #     zenbpm:
+  #       condition: service_healthy

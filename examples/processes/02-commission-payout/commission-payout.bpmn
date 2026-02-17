@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ZenBPM Modeler" exporterVersion="1.0.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+  <bpmn:collaboration id="Collaboration_04ng0p2">
+    <bpmn:participant id="Participant_10041px" name="ZenBPM" processRef="provision-payout-process" />
+  </bpmn:collaboration>
+  <bpmn:process id="provision-payout-process" name="Výplata obchodní provize" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_1whk98i">
+      <bpmn:lane id="Lane_0rr54yj" name="Žadatel">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_080idbs</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_1hba1ge" name="Schvalovatel">
+        <bpmn:flowNodeRef>Gateway_1eogpor</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1plr1yg</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1cnfwhz</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_157tkhm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0xx4x3a</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="Flow_1ig5s12" sourceRef="StartEvent_1" targetRef="Activity_080idbs" />
+    <bpmn:sequenceFlow id="Flow_15q8cjd" sourceRef="Activity_080idbs" targetRef="Activity_0xx4x3a" />
+    <bpmn:sequenceFlow id="Flow_0hkl7wi" sourceRef="Activity_0xx4x3a" targetRef="Gateway_1eogpor" />
+    <bpmn:sequenceFlow id="Flow_0e346j4" name="Ano" sourceRef="Gateway_1eogpor" targetRef="Activity_1plr1yg">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=aiResult.decision = "OK"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1s4yr1y" sourceRef="Activity_1cnfwhz" targetRef="Event_157tkhm" />
+    <bpmn:sequenceFlow id="Flow_01cxct9" name="Ne" sourceRef="Gateway_1eogpor" targetRef="Activity_080idbs" />
+    <bpmn:sequenceFlow id="Flow_0stftmm" sourceRef="Activity_1plr1yg" targetRef="Activity_1cnfwhz" />
+    <bpmn:startEvent id="StartEvent_1" name="Požadavek na vyplacení provize">
+      <bpmn:outgoing>Flow_1ig5s12</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gateway_1eogpor" name="AI kontrola OK?" default="Flow_01cxct9">
+      <bpmn:incoming>Flow_0hkl7wi</bpmn:incoming>
+      <bpmn:outgoing>Flow_0e346j4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_01cxct9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Activity_1plr1yg" name="Schválení">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0e346j4</bpmn:incoming>
+      <bpmn:outgoing>Flow_0stftmm</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_1cnfwhz" name="Odeslání platby">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;Odeslání platby &#34;+ string(amount*0.05)" target="log" />
+        </zeebe:ioMapping>
+        <zeebe:taskDefinition type="log-worker" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0stftmm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1s4yr1y</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_157tkhm" name="Provize zpracována">
+      <bpmn:incoming>Flow_1s4yr1y</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_0xx4x3a" name="Provedení AI předkontroly">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;Dostatečná specifikace případu (klient, obchodní případ). Uživatel vyplnil hodnotu \&#34;{{.reason}}\&#34; a zároveň hodnota vyšší než 50 000. Uživatel vyplnil hodnotu \&#34;{{.amount}}\&#34;&#34;" target="okConditions" />
+          <zeebe:output source="=aiResult" target="aiResult" />
+        </zeebe:ioMapping>
+        <zeebe:taskDefinition type="openai-connector" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_15q8cjd</bpmn:incoming>
+      <bpmn:outgoing>Flow_0hkl7wi</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_080idbs" name="Vyplnění žádosti">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:properties>
+          <zeebe:property name="ZEN_FORM" value="{&#10;  &#34;components&#34;: [&#10;    {&#10;      &#34;label&#34;: &#34;Důvod Odmítnutí&#34;,&#10;      &#34;type&#34;: &#34;textfield&#34;,&#10;      &#34;layout&#34;: {&#10;        &#34;row&#34;: &#34;Row_1s4ldl8&#34;,&#10;        &#34;columns&#34;: null&#10;      },&#10;      &#34;id&#34;: &#34;Field_0mer3yf&#34;,&#10;      &#34;key&#34;: &#34;aiResult.reason&#34;,&#10;      &#34;readonly&#34;: true,&#10;      &#34;conditional&#34;: {&#10;        &#34;hide&#34;: &#34;=aiResult.reason = \&#34;\&#34;&#34;&#10;      }&#10;    },&#10;    {&#10;      &#34;label&#34;: &#34;Reason&#34;,&#10;      &#34;type&#34;: &#34;textfield&#34;,&#10;      &#34;layout&#34;: {&#10;        &#34;row&#34;: &#34;Row_1y3vbnz&#34;,&#10;        &#34;columns&#34;: null&#10;      },&#10;      &#34;id&#34;: &#34;Field_036pnpa&#34;,&#10;      &#34;key&#34;: &#34;reason&#34;&#10;    },&#10;    {&#10;      &#34;label&#34;: &#34;amount&#34;,&#10;      &#34;type&#34;: &#34;number&#34;,&#10;      &#34;layout&#34;: {&#10;        &#34;row&#34;: &#34;Row_0c80vro&#34;,&#10;        &#34;columns&#34;: null&#10;      },&#10;      &#34;id&#34;: &#34;Field_0izin0j&#34;,&#10;      &#34;key&#34;: &#34;amount&#34;&#10;    }&#10;  ],&#10;  &#34;type&#34;: &#34;default&#34;,&#10;  &#34;id&#34;: &#34;Form_055inof&#34;,&#10;  &#34;schemaVersion&#34;: 19&#10;}" />
+        </zeebe:properties>
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;{\&#34;components\&#34;:[{\&#34;label\&#34;:\&#34;Důvod Odmítnutí\&#34;,\&#34;type\&#34;:\&#34;textfield\&#34;,\&#34;layout\&#34;:{\&#34;row\&#34;:\&#34;Row_1s4ldl8\&#34;,\&#34;columns\&#34;:null},\&#34;id\&#34;:\&#34;Field_0mer3yf\&#34;,\&#34;key\&#34;:\&#34;aiResult.reason\&#34;,\&#34;readonly\&#34;:true,\&#34;conditional\&#34;:{\&#34;hide\&#34;:\&#34;=aiResult.reason = \\\&#34;\\\&#34;\&#34;}},{\&#34;label\&#34;:\&#34;Reason\&#34;,\&#34;type\&#34;:\&#34;textfield\&#34;,\&#34;layout\&#34;:{\&#34;row\&#34;:\&#34;Row_1y3vbnz\&#34;,\&#34;columns\&#34;:null},\&#34;id\&#34;:\&#34;Field_036pnpa\&#34;,\&#34;key\&#34;:\&#34;reason\&#34;},{\&#34;label\&#34;:\&#34;amount\&#34;,\&#34;type\&#34;:\&#34;number\&#34;,\&#34;layout\&#34;:{\&#34;row\&#34;:\&#34;Row_0c80vro\&#34;,\&#34;columns\&#34;:null},\&#34;id\&#34;:\&#34;Field_0izin0j\&#34;,\&#34;key\&#34;:\&#34;amount\&#34;}],\&#34;type\&#34;:\&#34;default\&#34;,\&#34;id\&#34;:\&#34;Form_055inof\&#34;,\&#34;schemaVersion\&#34;:19}&#34;" target="ZEN_FORM" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ig5s12</bpmn:incoming>
+      <bpmn:incoming>Flow_01cxct9</bpmn:incoming>
+      <bpmn:outgoing>Flow_15q8cjd</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_04ng0p2">
+      <bpmndi:BPMNShape id="Participant_10041px_di" bpmnElement="Participant_10041px" isHorizontal="true">
+        <dc:Bounds x="121" y="60" width="800" height="310" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1hba1ge_di" bpmnElement="Lane_1hba1ge" isHorizontal="true">
+        <dc:Bounds x="151" y="220" width="770" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0rr54yj_di" bpmnElement="Lane_0rr54yj" isHorizontal="true">
+        <dc:Bounds x="151" y="60" width="770" height="160" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_1" bpmnElement="StartEvent_1">
+        <dc:Bounds x="213" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="189" y="165" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1eogpor_di" bpmnElement="Gateway_1eogpor" isMarkerVisible="true">
+        <dc:Bounds x="455" y="265" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="441" y="322" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0c5km8d_di" bpmnElement="Activity_1plr1yg">
+        <dc:Bounds x="550" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03b0am8_di" bpmnElement="Activity_1cnfwhz">
+        <dc:Bounds x="690" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_157tkhm_di" bpmnElement="Event_157tkhm">
+        <dc:Bounds x="842" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="831" y="315" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_09etb7t_di" bpmnElement="Activity_0xx4x3a">
+        <dc:Bounds x="290" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_01j2n41_di" bpmnElement="Activity_080idbs">
+        <dc:Bounds x="290" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ig5s12_di" bpmnElement="Flow_1ig5s12">
+        <di:waypoint x="249" y="140" />
+        <di:waypoint x="290" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15q8cjd_di" bpmnElement="Flow_15q8cjd">
+        <di:waypoint x="340" y="180" />
+        <di:waypoint x="340" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hkl7wi_di" bpmnElement="Flow_0hkl7wi">
+        <di:waypoint x="390" y="290" />
+        <di:waypoint x="455" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0e346j4_di" bpmnElement="Flow_0e346j4">
+        <di:waypoint x="505" y="290" />
+        <di:waypoint x="550" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="518" y="272" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1s4yr1y_di" bpmnElement="Flow_1s4yr1y">
+        <di:waypoint x="790" y="290" />
+        <di:waypoint x="842" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01cxct9_di" bpmnElement="Flow_01cxct9">
+        <di:waypoint x="480" y="265" />
+        <di:waypoint x="480" y="160" />
+        <di:waypoint x="390" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="488" y="193" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0stftmm_di" bpmnElement="Flow_0stftmm">
+        <di:waypoint x="650" y="290" />
+        <di:waypoint x="690" y="290" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
