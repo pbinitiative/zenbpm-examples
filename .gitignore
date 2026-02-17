@@ -1,0 +1,21 @@
+# Environment files
+.env
+*.env.local
+
+# Go
+bin/
+tmp/
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
