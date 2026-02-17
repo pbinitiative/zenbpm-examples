@@ -4,63 +4,74 @@ Examples and showcases for the [ZenBPM](https://github.com/pbinitiative/zenbpm) 
 
 ## Quick Start
 
-### Run all examples at once
-
 ```bash
-docker compose -f docker-compose.all.yml up -d
-```
-
-This starts the platform, deploys all BPMN processes, and runs a single unified worker that handles every job type. Open http://localhost:9000 to explore.
-
-### Run a single process
-
-```bash
-cd examples/processes/01-hello-world
 docker compose up -d
 ```
 
-Each process auto-deploys on startup and pulls in the workers it needs.
+This starts the platform, deploys all BPMN processes, and runs the workers. Open http://localhost:9000 to explore.
+
+## Start a Process Instance
+
+Check the deploy logs for process definition keys:
+
+```bash
+docker compose logs deploy
+```
+
+Then start a hello-world instance:
+
+```bash
+curl -X POST http://localhost:8080/v1/process-instances \
+  -H "Content-Type: application/json" \
+  -d '{"processDefinitionKey": <KEY_FROM_DEPLOY>, "variables": {}}'
+```
+
+Check the worker output:
+
+```bash
+docker compose logs workers
+```
 
 ## Repository Structure
 
 ```
 zenbpm-examples/
-├── docker-compose.yml              # Platform: ZenBPM engine + UI
-├── docker-compose.all.yml          # All-in-one: platform + deploy all + unified worker
+├── docker-compose.yml              # Platform + deploy + workers
 ├── docker-compose.build.yml        # Override: build from local source
 ├── utils/
-│   ├── scripts/deploy-process.sh   # Deploy a BPMN file via REST API
-│   └── all-workers/                # Dockerfile to build all workers into one container
+│   └── scripts/deploy-process.sh   # Deploy a BPMN file via REST API
 ├── examples/
-│   ├── processes/                  # BPMN processes (each with docker-compose + README)
+│   ├── processes/                  # BPMN processes (each with README)
 │   │   ├── 01-hello-world/
 │   │   └── 02-commission-payout/
-│   └── workers/                    # Reusable worker containers
-│       ├── log-worker/
-│       └── openai-connector/
+│   └── workers/                    # All workers (single Go project)
+│       ├── main.go
+│       └── workers/
+│           ├── log/
+│           └── openai/
 └── showcases/                      # Full end-to-end applications
     └── employee-onboarding/        # (coming soon)
 ```
 
 ## Processes
 
-| # | Process | Workers Used | Concepts |
-|---|---------|-------------|----------|
-| [01](examples/processes/01-hello-world/) | **Hello World** | `log-worker` | Service task, process variables |
-| [02](examples/processes/02-commission-payout/) | **Commission Payout** | `log-worker`, `openai-connector` | User tasks, AI validation, exclusive gateway |
+| # | Process | Concepts |
+|---|---------|----------|
+| [01](examples/processes/01-hello-world/) | **Hello World** | Service task, input mappings |
+| [02](examples/processes/02-commission-payout/) | **Commission Payout** | User tasks, AI validation, exclusive gateway |
 
 ## Workers
 
-Reusable worker containers that handle specific job types. Processes reference them in their `docker-compose.yml`.
+All workers live in [`examples/workers/`](examples/workers/). Each worker has its own directory under `workers/workers/`.
 
-| Worker | Job Type | Description |
-|--------|----------|-------------|
-| [log-worker](examples/workers/log-worker/) | `log-worker` | Reads the `log` variable and prints it |
-| [openai-connector](examples/workers/openai-connector/) | `openai-connector` | Validates data via OpenAI GPT-4o-mini, returns `decision` + `reason` |
+| Job Type | Directory | Description |
+|----------|-----------|-------------|
+| `log-worker` | `workers/log/` | Reads the `log` variable and prints it |
+| `openai-connector` | `workers/openai/` | Validates data via OpenAI GPT-4o-mini, returns `decision` + `reason` |
+
+To add a new worker: create a directory under `workers/workers/`, implement the handler, and register it in `main.go`.
 
 ## Showcases
-
-Full applications that demonstrate real-world digitalization scenarios.
 
 | Showcase | Status | Description |
 |----------|--------|-------------|
@@ -68,14 +79,12 @@ Full applications that demonstrate real-world digitalization scenarios.
 
 ## Platform
 
-All examples share a common platform defined in the root `docker-compose.yml`:
-
 - **ZenBPM Engine** — `ghcr.io/pbinitiative/zenbpm:latest` (REST on :8080, gRPC on :9090)
 - **ZenBPM UI** — `ghcr.io/pbinitiative/zenbpm-ui:latest` (http://localhost:9000)
 
 ### Building from Source
 
-If you have the `zenbpm` and `zenbpm-ui` repos cloned as siblings, you can build from local source:
+If you have the `zenbpm` and `zenbpm-ui` repos cloned as siblings:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
@@ -83,7 +92,7 @@ docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
 
 ## Writing Workers
 
-Workers connect to ZenBPM via gRPC and handle service task jobs. Here's the minimal pattern:
+Workers connect to ZenBPM via gRPC and handle service task jobs:
 
 ```go
 conn, _ := grpc.NewClient("localhost:9090", grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -97,7 +106,7 @@ client.RegisterWorker(ctx, "my-worker-1", func(ctx context.Context, job *proto.W
 }, "my-job-type")
 ```
 
-See [examples/workers/log-worker/main.go](examples/workers/log-worker/main.go) for a complete example.
+See [examples/workers/](examples/workers/) for the full implementation.
 
 ## License
 

@@ -1,9 +1,10 @@
-module github.com/pbinitiative/zenbpm-examples/examples/workers/log-worker
+module zenbpm-workers
 
 go 1.25
 
 require (
 	github.com/pbinitiative/zenbpm v0.3.9
+	github.com/sashabaranov/go-openai v1.17.9
 	google.golang.org/grpc v1.72.1
 )
 
