@@ -11,7 +11,7 @@ import (
 )
 
 // Handler reads the "log" variable from job variables and prints it.
-func Handler(ctx context.Context, job *proto.WaitingJob) (map[string]interface{}, error) {
+func Handler(ctx context.Context, job *proto.WaitingJob) (map[string]any, *zenclient.WorkerError) {
 	jobKey := job.GetKey()
 
 	variables := map[string]interface{}{}

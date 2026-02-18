@@ -1,0 +1,30 @@
+name: zenbpm
+httpServer:
+  context: /
+  addr: :8080
+grpcServer:
+  addr: :9090
+cluster:
+  addr: localhost:8090
+  adv: localhost:8090
+  raft:
+    dir: node-1
+    bootstrapExpect: 1
+    bootstrapExpectTimeout: 30m
+    joinAttempts: 5
+    joinAddresses:
+      - localhost:8090
+  nodeId: node-1
+  script:
+    feel:
+      maxVmPoolSize: 10
+      minVmPoolSize: 2
+    js:
+      maxVmPoolSize: 10
+      minVmPoolSize: 2
+# tracing:
+#   enabled: true
+#   endpoint: localhost:4318
+#   name: ZenBPM
+#   transferHeaders:
+#     - x-my-custom-header

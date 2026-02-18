@@ -6,6 +6,10 @@
 services:
   zenbpm:
     image: ghcr.io/pbinitiative/zenbpm:latest
+    environment:
+      - CONFIG_FILE=/var/zenbpm/zen-conf.yaml
+    volumes:
+      - ./conf/zenbpm/conf.yaml:/var/zenbpm/zen-conf.yaml
     ports:
       - "8080:8080"
       - "9090:9090"
