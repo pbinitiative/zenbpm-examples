@@ -1,38 +1,46 @@
 include:
   - ../../docker-compose.yml
 
-# Scaffold for the employee onboarding showcase.
-# Uncomment services as they are implemented.
+# NOTE: the ZenBPM service name is 'zenbpm' (defined in ../../docker-compose.yml).
+# Verify this matches if the root docker-compose.yml is ever renamed.
 
 services:
   contract-onboarding-worker:
     build:
       context: ./workers/contract-onboarding-worker
-    ports:
-      - "8080:8080"
     restart: unless-stopped
+    environment:
+      ZENBPM_GRPC_HOST: zenbpm
+      ZENBPM_GRPC_PORT: 9090
+    depends_on:
+      zenbpm:
+        condition: service_healthy
 
-  # onboarding-backend:
-  #   build: ./backend
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     ZENBPM_URL: http://zenbpm:8080
-  #   depends_on:
-  #     zenbpm:
-  #       condition: service_healthy
+  portal-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      ZENBPM_URL: http://zenbpm:8080/v1
+      CORS_ALLOWED_ORIGINS: http://localhost:5173
+      PROCESS_KEY: contract_onboarding_and_registration   # ← set to your actual process key
+    depends_on:
+      zenbpm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # onboarding-frontend:
-  #   build: ./frontend
-  #   ports:
-  #     - "5173:80"
-  #   depends_on:
-  #     - onboarding-backend
-
-  # onboarding-workers:
-  #   build: ./workers
-  #   environment:
-  #     ZENBPM_GRPC_ADDR: zenbpm:9090
-  #   depends_on:
-  #     zenbpm:
-  #       condition: service_healthy
+  portal-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      portal-backend:
+        condition: service_healthy
