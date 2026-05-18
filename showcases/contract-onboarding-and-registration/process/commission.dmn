@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="DRD_commission" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.44.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+  <decision id="DMN_basescore" name="Determining the base score">
+    <informationRequirement id="InformationRequirement_165uqcs">
+      <requiredInput href="#InputData_0gcik3n" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_0bo6pfh" hitPolicy="COLLECT" aggregation="SUM" biodi:annotationsWidth="610">
+      <input id="InputClause_0zifyoz" label="Hodnota uzavřené smlouvy o dílo">
+        <inputExpression id="LiteralExpression_13m1eiq" typeRef="integer">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="Skóre" typeRef="integer" biodi:width="150" />
+      <rule id="DecisionRule_14jny4p">
+        <description>Základní část provize dle hodnoty uzavřené smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_1wqbqqv">
+          <text>&gt;200000</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_160orfx">
+          <text>1</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ik9d1o">
+        <description>Základní část provize dle hodnoty uzavřené smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_0tgq7an">
+          <text>&gt;500000</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_09p2s5c">
+          <text>2</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0neic1l">
+        <description>Základní část provize dle hodnoty uzavřené smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_0wck09n">
+          <text>&gt;2000000</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1xumx2o">
+          <text>3</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <inputData id="InputData_0gcik3n" name="Value of the closed work contract" />
+  <decision id="DMN_salesperson_commission" name="Setting the salesperson&#39;s commission">
+    <informationRequirement id="InformationRequirement_1bocgs8">
+      <requiredDecision href="#DMN_speedbonus" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_0r021th">
+      <requiredDecision href="#DMN_basescore" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_19dcct2">
+      <requiredDecision href="#DMN_location_bonus_score" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_0fgh4f1">
+      <requiredDecision href="#DMN_retention_bonus_score" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_01c2rzr" hitPolicy="COLLECT" aggregation="SUM">
+      <input id="InputClause_0q6zw83" label="Celkové skóre">
+        <inputExpression id="LiteralExpression_1lj973t" typeRef="integer" />
+      </input>
+      <output id="OutputClause_19vskbb" label="Výše odměny [Kč]" typeRef="integer" />
+      <rule id="DecisionRule_0el5n6f">
+        <inputEntry id="UnaryTests_0np84s4">
+          <text>1</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_17hln2s">
+          <text>1000</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1qlx1cr">
+        <inputEntry id="UnaryTests_1r7wo8q">
+          <text>2</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0b5khon">
+          <text>5000</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_18fscez">
+        <inputEntry id="UnaryTests_192gk2n">
+          <text>3</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0lwaiok">
+          <text>20000</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_10iqgmb">
+        <inputEntry id="UnaryTests_0dc7psb">
+          <text>[ 5 .. 10 ]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0c4swih">
+          <text>6000</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0brz4hm">
+        <inputEntry id="UnaryTests_0u7xh94">
+          <text>[ 11 .. 20 ]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0ltenbe">
+          <text>14000</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1yks8sk">
+        <inputEntry id="UnaryTests_18altl3">
+          <text>&gt;30</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0c1ia5z">
+          <text>50000</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1d951nz">
+        <inputEntry id="UnaryTests_0s2uyb7">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1nt43mv">
+          <text></text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <inputData id="InputData_1my6wx7" name="Days to contract closure from the sent offer" />
+  <inputData id="InputData_03f8xfd" name="Client&#39;s headquarters" />
+  <inputData id="InputData_1n55aov" name="Number of contracts closed with the given client" />
+  <decision id="DMN_speedbonus" name="Setting the speed bonus score for contract closure">
+    <informationRequirement id="InformationRequirement_1hjxoqd">
+      <requiredInput href="#InputData_0gcik3n" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_16e43hh">
+      <requiredInput href="#InputData_1my6wx7" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_110wo7i" hitPolicy="COLLECT" aggregation="SUM">
+      <input id="InputClause_17ow022" label="Hodnota uzavřené smlouvy o dílo">
+        <inputExpression id="LiteralExpression_16g739j" typeRef="integer" />
+      </input>
+      <input id="InputClause_0t51bto" label="Počet dnů uzavření smlouvy od odeslané nabídky">
+        <inputExpression id="LiteralExpression_0v1bb7p" typeRef="integer">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_0xt5trd" label="Skóre" typeRef="integer" biodi:width="192" />
+      <rule id="DecisionRule_1pvfga6">
+        <description>Bonus za rychlost uzavření smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_1trsu20">
+          <text>&gt;200000</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0nixbi0">
+          <text>&lt;15</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_01qlnsh">
+          <text>1</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_031kjj9">
+        <description>Bonus za rychlost uzavření smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_17t26nr">
+          <text>&gt;500000</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0agyx2a">
+          <text>&lt;15</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0uycmim">
+          <text>2</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1pr9q2f">
+        <description>Bonus za rychlost uzavření smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_1juafqq">
+          <text>&gt;2000000</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0321p77">
+          <text>&lt;15</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1844mhn">
+          <text>7</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="DMN_location_bonus_score" name="Determining the bonus score for client location">
+    <informationRequirement id="InformationRequirement_0hlrmsr">
+      <requiredInput href="#InputData_0gcik3n" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_1o4kp1a">
+      <requiredInput href="#InputData_03f8xfd" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_09inelh" hitPolicy="COLLECT" aggregation="SUM" biodi:annotationsWidth="592">
+      <input id="InputClause_098dczm" label="Hodnota uzavřené smlouvy o dílo">
+        <inputExpression id="LiteralExpression_0szxpge" typeRef="integer" />
+      </input>
+      <input id="InputClause_0rjgp6x" label="Sídlo klienta">
+        <inputExpression id="LiteralExpression_0p8hhq8" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_0c7t62x" label="Skóre" typeRef="integer" />
+      <rule id="DecisionRule_02ouwnj">
+        <description>Bonus za účelem podpory obchodníků mimo Prahu dle hodnoty uzavřené smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_0mhdsdj">
+          <text>&gt;200000</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_02v0rru">
+          <text>not("Praha")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0wh8weo">
+          <text>1</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1gervnp">
+        <description>Bonus za účelem podpory obchodníků mimo Prahu dle hodnoty uzavřené smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_1tmt44s">
+          <text>&gt;500000</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1f0k71b">
+          <text>not("Praha")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0lfp7v5">
+          <text>2</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1rsf9oy">
+        <description>Bonus za účelem podpory obchodníků mimo Prahu dle hodnoty uzavřené smlouvy o dílo</description>
+        <inputEntry id="UnaryTests_02wnsqh">
+          <text>&gt;1000000</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_17yuq0r">
+          <text>not("Praha")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0ooewjc">
+          <text>3</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_15ieq8d">
+        <description>Bonus za účelem zvýšení objemu zakázek v Plzni</description>
+        <inputEntry id="UnaryTests_1y82hvz">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1nmoqy6">
+          <text>"Plzeň"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0vw8axd">
+          <text>10</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="DMN_retention_bonus_score" name="Determining the bonus score for client retention">
+    <informationRequirement id="InformationRequirement_04xvfsi">
+      <requiredInput href="#InputData_1n55aov" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_1cvp7nd" hitPolicy="COLLECT" aggregation="SUM">
+      <input id="InputClause_17yvj4l" label="Počet uzavřených smluv s daným klientem" biodi:width="239">
+        <inputExpression id="LiteralExpression_1b2ouup" typeRef="integer" />
+      </input>
+      <output id="OutputClause_13m00h4" label="Skóre" typeRef="integer" />
+      <rule id="DecisionRule_0a0fywq">
+        <description>Bonus za návratnost klientů</description>
+        <inputEntry id="UnaryTests_0yi0b4l">
+          <text>&gt;=2</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ow3sw4">
+          <text>2</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0w9qims">
+        <description>Bonus za návratnost klientů</description>
+        <inputEntry id="UnaryTests_156sr9x">
+          <text>&gt;=5</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1mbe9i5">
+          <text>4</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1tzo245">
+        <description>Bonus za návratnost klientů</description>
+        <inputEntry id="UnaryTests_1lje1kf">
+          <text>&gt;=10</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1dg46e7">
+          <text>7</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="DMN_basescore">
+        <dc:Bounds height="80" width="180" x="360" y="220" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_07l89y7" dmnElementRef="InputData_0gcik3n">
+        <dc:Bounds height="45" width="125" x="387" y="338" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_0dr94ec" dmnElementRef="DMN_salesperson_commission">
+        <dc:Bounds height="80" width="180" x="460" y="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_1l1fxqp" dmnElementRef="InformationRequirement_165uqcs">
+        <di:waypoint x="450" y="338" />
+        <di:waypoint x="450" y="320" />
+        <di:waypoint x="450" y="300" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_0hhio9f" dmnElementRef="InformationRequirement_0hlrmsr">
+        <di:waypoint x="450" y="338" />
+        <di:waypoint x="620" y="320" />
+        <di:waypoint x="620" y="300" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_0akv7g0" dmnElementRef="InformationRequirement_1hjxoqd">
+        <di:waypoint x="450" y="338" />
+        <di:waypoint x="280" y="320" />
+        <di:waypoint x="280" y="300" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0qfhqh1" dmnElementRef="InputData_1my6wx7">
+        <dc:Bounds height="45" width="125" x="178" y="339" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_0uivj56" dmnElementRef="InformationRequirement_16e43hh">
+        <di:waypoint x="241" y="339" />
+        <di:waypoint x="220" y="320" />
+        <di:waypoint x="220" y="300" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0dxqtiz" dmnElementRef="InputData_03f8xfd">
+        <dc:Bounds height="45" width="125" x="588" y="339" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_0m5g0do" dmnElementRef="InformationRequirement_1o4kp1a">
+        <di:waypoint x="651" y="339" />
+        <di:waypoint x="680" y="320" />
+        <di:waypoint x="680" y="300" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0t5z7mn" dmnElementRef="InputData_1n55aov">
+        <dc:Bounds height="45" width="125" x="788" y="339" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_1177n3z" dmnElementRef="InformationRequirement_04xvfsi">
+        <di:waypoint x="851" y="339" />
+        <di:waypoint x="850" y="320" />
+        <di:waypoint x="850" y="300" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0u4k12d" dmnElementRef="DMN_speedbonus">
+        <dc:Bounds height="80" width="180" x="160" y="220" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_033u20i" dmnElementRef="DMN_location_bonus_score">
+        <dc:Bounds height="80" width="180" x="560" y="220" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_0v013d1" dmnElementRef="DMN_retention_bonus_score">
+        <dc:Bounds height="80" width="180" x="760" y="220" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_1vh8jnk" dmnElementRef="InformationRequirement_1bocgs8">
+        <di:waypoint x="250" y="220" />
+        <di:waypoint x="496" y="180" />
+        <di:waypoint x="496" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_0hzxvhp" dmnElementRef="InformationRequirement_0r021th">
+        <di:waypoint x="450" y="220" />
+        <di:waypoint x="532" y="180" />
+        <di:waypoint x="532" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_1me7m4v" dmnElementRef="InformationRequirement_19dcct2">
+        <di:waypoint x="650" y="220" />
+        <di:waypoint x="568" y="180" />
+        <di:waypoint x="568" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_0bzvto6" dmnElementRef="InformationRequirement_0fgh4f1">
+        <di:waypoint x="850" y="220" />
+        <di:waypoint x="604" y="180" />
+        <di:waypoint x="604" y="160" />
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
