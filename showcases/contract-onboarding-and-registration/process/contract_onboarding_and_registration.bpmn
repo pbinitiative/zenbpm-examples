@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pem="http://ibpm.cz/pem/metamodel" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.44.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pem="http://ibpm.cz/pem/metamodel" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.33.1" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <bpmn:collaboration id="Collaboration_07lrpev">
     <bpmn:participant id="Participant_0le2het" name="Happy Comapny Ltd." processRef="Process_1" pem:databaseReference="data:23332">
       <bpmn:documentation textFormat="text/x-comments" />
@@ -58,7 +58,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1bf86yz" sourceRef="Task_1n0yx11" targetRef="Task_0rgsvmr" />
     <bpmn:sequenceFlow id="Flow_1je5oe0" sourceRef="Task_0rgsvmr" targetRef="Activity_1ypmm2e" />
     <bpmn:sequenceFlow id="Flow_0ewq7vc" sourceRef="Activity_09h4211" targetRef="Gateway_0z8819o" />
-    <bpmn:sequenceFlow id="Flow_00jrcwp" name="Ne" sourceRef="Gateway_0z8819o" targetRef="Activity_1x2ei25" />
+    <bpmn:sequenceFlow id="Flow_00jrcwp" name="No" sourceRef="Gateway_0z8819o" targetRef="Activity_1x2ei25" />
     <bpmn:sequenceFlow id="Flow_1ox5hdy" sourceRef="Activity_1x2ei25" targetRef="Event_13drlsr" />
     <bpmn:sequenceFlow id="Flow_0ym4bt3" sourceRef="Activity_1yiw265" targetRef="Activity_18ptfob" />
     <bpmn:sequenceFlow id="Flow_1wi1hsk" sourceRef="Activity_18ptfob" targetRef="Task_0gepjvb" />
