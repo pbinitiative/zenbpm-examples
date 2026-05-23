@@ -12,7 +12,7 @@ RUN mvn -B package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /workspace/app/target/contract-onboarding-worker-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=build /workspace/app/target/contract-onboarding-worker-0.0.1-SNAPSHOT.jar ./contract-onboarding-worker.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/contract-onboarding-worker.jar"]
