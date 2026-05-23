@@ -5,6 +5,25 @@ include:
 # Verify this matches if the root docker-compose.yml is ever renamed.
 
 services:
+  deploy-contract-onboarding:
+    image: curlimages/curl:latest
+    depends_on:
+      zenbpm:
+        condition: service_healthy
+    volumes:
+      - ./process:/process:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Deploying contract onboarding process..."
+        for f in /process/*.bpmn; do
+          [ -f "$$f" ] || continue
+          echo "  -> $$f"
+          curl -sfS -X POST http://zenbpm:8080/v1/process-definitions -F "resource=@$$f"
+          echo ""
+        done
+        echo "Done."
+
   contract-onboarding-worker:
     build:
       context: ./workers/contract-onboarding-worker
@@ -23,9 +42,9 @@ services:
     ports:
       - "8081:8081"
     environment:
-      ZENBPM_URL: http://zenbpm:8080/v1
-      CORS_ALLOWED_ORIGINS: http://localhost:5173
-      PROCESS_KEY: contract_onboarding_and_registration   # ← set to your actual process key
+      ZENBPM_BASE_URL: http://zenbpm:8080/v1
+      PORTAL_CORS_ALLOWED_ORIGINS: http://localhost:5173
+      PORTAL_PROCESS_DEFAULT_KEY: contract_onboarding_and_registration
     depends_on:
       zenbpm:
         condition: service_healthy
