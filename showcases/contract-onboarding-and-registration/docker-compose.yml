@@ -8,9 +8,6 @@ services:
   contract-onboarding-worker:
     build:
       context: ./workers/contract-onboarding-worker
-      args:
-        GITHUB_ACTOR: ${GITHUB_ACTOR}
-        GITHUB_TOKEN: ${GITHUB_TOKEN}
     restart: unless-stopped
     environment:
       ZENBPM_GRPC_HOST: zenbpm

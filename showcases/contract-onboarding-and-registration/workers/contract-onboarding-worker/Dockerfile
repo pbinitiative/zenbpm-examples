@@ -1,15 +1,13 @@
 FROM maven:3.9.9-eclipse-temurin-21 AS build
+
+# Build zenbpm-java-client from source — not published to any registry
+RUN git clone --depth 1 https://github.com/pbinitiative/zenbpm-java-client.git /workspace/zenbpm-java-client && \
+    cd /workspace/zenbpm-java-client && \
+    mvn -B install -DskipTests -q
+
 WORKDIR /workspace/app
-
-ARG GITHUB_ACTOR
-ARG GITHUB_TOKEN
-ENV GITHUB_ACTOR=$GITHUB_ACTOR
-ENV GITHUB_TOKEN=$GITHUB_TOKEN
-
-COPY settings.xml /root/.m2/settings.xml
 COPY pom.xml .
 COPY src ./src
-
 RUN mvn -B package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine

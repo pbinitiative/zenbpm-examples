@@ -39,17 +39,6 @@ showcases/employee-onboarding/
 └── docker-compose.yml connecting the  dots
 ```
 
-## Prerequisites
-
-The `contract-onboarding-worker` pulls `zenbpm-spring-boot-starter` from GitHub Packages, which requires authentication. Before running `docker compose up`, create a `.env` file from the template:
-
-```sh
-cp .env.example .env
-# then fill in GITHUB_ACTOR and GITHUB_TOKEN
-```
-
-`GITHUB_TOKEN` must be a personal access token (classic or fine-grained) with the **read:packages** scope.
-
 ## Contributing
 
 Feel free to contribute to this showcase
