@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 12,
+  "type": "default",
+  "id": "createContract",
+  "components": [
+    {
+      "type": "textfield",
+      "id": "clientName",
+      "key": "clientName",
+      "label": "Client name",
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "id": "accountManager",
+      "key": "accountManager",
+      "label": "Account manager",
+      "values": [
+        { "label": "Donnie Bridges", "value": "donnie_bridges" },
+        { "label": "Felipe Chen",    "value": "felipe_chen"   },
+        { "label": "Roberto Best",   "value": "roberto_best"  }
+      ],
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "id": "contractType",
+      "key": "contractType",
+      "label": "Contract type",
+      "values": [
+        { "label": "Standard",   "value": "standard"   },
+        { "label": "Framework",  "value": "framework"  },
+        { "label": "Individual", "value": "individual" }
+      ],
+      "validate": { "required": true }
+    },
+    {
+      "type": "textfield",
+      "id": "contractValue",
+      "key": "contractValue",
+      "label": "Contract value (USD)",
+      "validate": { "required": true }
+    },
+    {
+      "type": "textfield",
+      "id": "subject",
+      "key": "subject",
+      "label": "Subject of contract",
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "id": "paymentTerms",
+      "key": "paymentTerms",
+      "label": "Payment terms",
+      "values": [
+        { "label": "Prepayment",      "value": "prepayment" },
+        { "label": "Net 30",          "value": "net30"      },
+        { "label": "Net 60",          "value": "net60"      },
+        { "label": "Net 90",          "value": "net90"      },
+        { "label": "Milestone-based", "value": "milestone"  }
+      ]
+    },
+    {
+      "type": "textarea",
+      "id": "internalNotes",
+      "key": "internalNotes",
+      "label": "Internal notes"
+    }
+  ]
+}

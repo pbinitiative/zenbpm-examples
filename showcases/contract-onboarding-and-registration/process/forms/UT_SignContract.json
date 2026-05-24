@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 12,
+  "type": "default",
+  "id": "signContract",
+  "components": [
+    {
+      "type": "text",
+      "id": "instructions",
+      "text": "### Sign the contract\n\nPlease upload a **JPG image** of your handwritten signature. The file must be a `.jpg` or `.jpeg` image. Once uploaded, click **Complete Task** to proceed."
+    },
+    {
+      "type": "filepicker",
+      "id": "signatureFile",
+      "key": "signatureFile",
+      "label": "Signature file",
+      "accept": ".jpg,.jpeg,image/jpeg",
+      "validate": {
+        "required": true
+      }
+    }
+  ]
+}
