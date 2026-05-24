@@ -17,6 +17,6 @@ export async function apiFetch(path, options = {}) {
     throw new Error(errorMessage);
   }
 
-  if (res.status === 204) return null;
-  return res.json();
+  const text = await res.text();
+  return text.length > 0 ? JSON.parse(text) : null;
 }
