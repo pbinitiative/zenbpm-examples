@@ -7,6 +7,7 @@ include:
 services:
   deploy-contract-onboarding:
     image: curlimages/curl:latest
+    restart: on-failure
     depends_on:
       zenbpm:
         condition: service_healthy
@@ -15,6 +16,12 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
+        set -e
+        echo "Waiting for ZenBPM API to be ready..."
+        until curl -sf http://zenbpm:8080/v1/process-definitions > /dev/null; do
+          echo "  ZenBPM not ready yet, retrying in 3s..."
+          sleep 3
+        done
         echo "Deploying contract onboarding process..."
         for f in /process/*.bpmn /process/*.dmn; do
           [ -f "$$f" ] || continue
@@ -41,10 +48,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
+    volumes:
+      - ./process/forms:/app/forms:ro
     environment:
       ZENBPM_BASE_URL: http://zenbpm:8080/v1
       PORTAL_CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
       PORTAL_PROCESS_DEFAULT_KEY: Process_Contract_Onboarding
+      PORTAL_FORMS_PATH: file:/app/forms/
     depends_on:
       zenbpm:
         condition: service_healthy

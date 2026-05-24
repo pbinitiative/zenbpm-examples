@@ -1,46 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pem="http://ibpm.cz/pem/metamodel" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.33.1" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:pem="http://ibpm.cz/pem/metamodel" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.33.1" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <bpmn:collaboration id="Collaboration_07lrpev">
     <bpmn:participant id="Participant_0le2het" name="Happy Comapny Ltd." processRef="Process_Contract_Onboarding" pem:databaseReference="data:23332">
       <bpmn:documentation textFormat="text/x-comments" />
     </bpmn:participant>
     <bpmn:participant id="Participant_Client" name="Client" />
-    <bpmn:messageFlow id="MessageFlow_0g48qij" sourceRef="Task_1pn7mg3" targetRef="Participant_Client" />
-    <bpmn:messageFlow id="Flow_0xk62jl" sourceRef="Activity_1ypmm2e" targetRef="Participant_Client" />
-    <bpmn:messageFlow id="Flow_1ivpl72" sourceRef="Participant_Client" targetRef="Event_152v5ss" />
+    <bpmn:messageFlow id="MessageFlow_0g48qij" sourceRef="ST_IssueProformaInvoice" targetRef="Participant_Client" />
+    <bpmn:messageFlow id="Flow_0xk62jl" sourceRef="ST_SendContractToClient" targetRef="Participant_Client" />
+    <bpmn:messageFlow id="Flow_1ivpl72" sourceRef="Participant_Client" targetRef="MICE_" />
   </bpmn:collaboration>
   <bpmn:process id="Process_Contract_Onboarding" name="Contract Onboarding and Registration" isExecutable="false">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_0qy3ps6" name="Procurement" pem:databaseReference="role:35">
         <bpmn:documentation textFormat="text/x-comments" />
-        <bpmn:flowNodeRef>Task_0rgsvmr</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_1n0yx11</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UT_SignContract</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_025der6" name="Salesperson" pem:databaseReference="role:56">
         <bpmn:documentation textFormat="text/x-comments" />
-        <bpmn:flowNodeRef>Activity_1ypmm2e</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ST_SendContractToClient</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_0r5d03f</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_0p1xfad</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>StartEvent_0td729k</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_1dtsb82</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_152v5ss</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_09h4211</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UT_CreateContract</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>MICE_</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UT_VerifyInterest</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_0gepjvb</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_1x2ei25</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UT_RecordRejection</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_0z8819o</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_1yiw265</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UT_CheckClientSignature</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_18ptfob</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0sagc7t</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_1pn7mg3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ST_IssueProformaInvoice</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0m8x7br</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_13drlsr</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:userTask id="Task_0rgsvmr" name="Electronically sign the contract">
-      <bpmn:incoming>SequenceFlow_1bf86yz</bpmn:incoming>
-      <bpmn:outgoing>Flow_1je5oe0</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:serviceTask id="Activity_1ypmm2e" name="Send the contract to client">
+    <bpmn:serviceTask id="ST_SendContractToClient" name="Send the contract to client">
       <bpmn:incoming>Flow_1je5oe0</bpmn:incoming>
       <bpmn:outgoing>Flow_0mtj18m</bpmn:outgoing>
       <bpmn:property id="Property_1ba6eni" name="__targetRef_placeholder" />
@@ -53,19 +48,18 @@
       <bpmn:documentation textFormat="text/x-comments" />
     </bpmn:dataObjectReference>
     <bpmn:dataObject id="DataObject_1vpcxmr" />
-    <bpmn:sequenceFlow id="SequenceFlow_0y97n6x" sourceRef="StartEvent_0td729k" targetRef="Task_1dtsb82" />
-    <bpmn:sequenceFlow id="SequenceFlow_09amf86" sourceRef="Task_1dtsb82" targetRef="Task_1n0yx11" />
-    <bpmn:sequenceFlow id="SequenceFlow_1bf86yz" sourceRef="Task_1n0yx11" targetRef="Task_0rgsvmr" />
-    <bpmn:sequenceFlow id="Flow_1je5oe0" sourceRef="Task_0rgsvmr" targetRef="Activity_1ypmm2e" />
-    <bpmn:sequenceFlow id="Flow_0ewq7vc" sourceRef="Activity_09h4211" targetRef="Gateway_0z8819o" />
-    <bpmn:sequenceFlow id="Flow_00jrcwp" name="No" sourceRef="Gateway_0z8819o" targetRef="Activity_1x2ei25" />
-    <bpmn:sequenceFlow id="Flow_1ox5hdy" sourceRef="Activity_1x2ei25" targetRef="Event_13drlsr" />
-    <bpmn:sequenceFlow id="Flow_0ym4bt3" sourceRef="Activity_1yiw265" targetRef="Activity_18ptfob" />
+    <bpmn:sequenceFlow id="SequenceFlow_0y97n6x" sourceRef="StartEvent_0td729k" targetRef="UT_CreateContract" />
+    <bpmn:sequenceFlow id="SequenceFlow_09amf86" sourceRef="UT_CreateContract" targetRef="UT_SignContract" />
+    <bpmn:sequenceFlow id="Flow_1je5oe0" sourceRef="UT_SignContract" targetRef="ST_SendContractToClient" />
+    <bpmn:sequenceFlow id="Flow_0ewq7vc" sourceRef="UT_VerifyInterest" targetRef="Gateway_0z8819o" />
+    <bpmn:sequenceFlow id="Flow_00jrcwp" name="No" sourceRef="Gateway_0z8819o" targetRef="UT_RecordRejection" />
+    <bpmn:sequenceFlow id="Flow_1ox5hdy" sourceRef="UT_RecordRejection" targetRef="Event_13drlsr" />
+    <bpmn:sequenceFlow id="Flow_0ym4bt3" sourceRef="UT_CheckClientSignature" targetRef="Activity_18ptfob" />
     <bpmn:sequenceFlow id="Flow_1wi1hsk" sourceRef="Activity_18ptfob" targetRef="Task_0gepjvb" />
     <bpmn:sequenceFlow id="Flow_1hk8u2h" sourceRef="Task_0gepjvb" targetRef="ExclusiveGateway_0sagc7t" />
     <bpmn:sequenceFlow id="SequenceFlow_0ips5ei" name="Ne" sourceRef="ExclusiveGateway_0sagc7t" targetRef="EndEvent_0m8x7br" />
-    <bpmn:sequenceFlow id="SequenceFlow_0jdm7xg" name="Yes" sourceRef="ExclusiveGateway_0sagc7t" targetRef="Task_1pn7mg3" />
-    <bpmn:sequenceFlow id="SequenceFlow_07kirvy" sourceRef="Task_1pn7mg3" targetRef="EndEvent_0m8x7br" />
+    <bpmn:sequenceFlow id="SequenceFlow_0jdm7xg" name="Yes" sourceRef="ExclusiveGateway_0sagc7t" targetRef="ST_IssueProformaInvoice" />
+    <bpmn:sequenceFlow id="SequenceFlow_07kirvy" sourceRef="ST_IssueProformaInvoice" targetRef="EndEvent_0m8x7br" />
     <bpmn:eventBasedGateway id="Gateway_0r5d03f">
       <bpmn:incoming>Flow_0mtj18m</bpmn:incoming>
       <bpmn:outgoing>Flow_1v9j0sr</bpmn:outgoing>
@@ -79,27 +73,99 @@
         <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P10D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
-    <bpmn:sequenceFlow id="Flow_148dbqy" sourceRef="Event_0p1xfad" targetRef="Activity_09h4211" />
+    <bpmn:sequenceFlow id="Flow_148dbqy" sourceRef="Event_0p1xfad" targetRef="UT_VerifyInterest" />
     <bpmn:startEvent id="StartEvent_0td729k" name="Client accepted the proposal">
       <bpmn:outgoing>SequenceFlow_0y97n6x</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Task_1dtsb82" name="Create the contract">
+    <bpmn:userTask id="UT_CreateContract" name="Create the contract">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="ZEN_FORM">{
+  "schemaVersion": 12,
+  "type": "default",
+  "id": "createContract",
+  "components": [
+    {
+      "type": "textfield",
+      "id": "clientName",
+      "key": "clientName",
+      "label": "Client name",
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "id": "accountManager",
+      "key": "accountManager",
+      "label": "Account manager",
+      "values": [
+        { "label": "Donnie Bridges", "value": "donnie_bridges" },
+        { "label": "Felipe Chen",    "value": "felipe_chen"   },
+        { "label": "Roberto Best",   "value": "roberto_best"  }
+      ],
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "id": "contractType",
+      "key": "contractType",
+      "label": "Contract type",
+      "values": [
+        { "label": "Standard",   "value": "standard"   },
+        { "label": "Framework",  "value": "framework"  },
+        { "label": "Individual", "value": "individual" }
+      ],
+      "validate": { "required": true }
+    },
+    {
+      "type": "textfield",
+      "id": "contractValue",
+      "key": "contractValue",
+      "label": "Contract value (USD)",
+      "validate": { "required": true }
+    },
+    {
+      "type": "textfield",
+      "id": "subject",
+      "key": "subject",
+      "label": "Subject of contract",
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "id": "paymentTerms",
+      "key": "paymentTerms",
+      "label": "Payment terms",
+      "values": [
+        { "label": "Prepayment",      "value": "prepayment" },
+        { "label": "Net 30",          "value": "net30"      },
+        { "label": "Net 60",          "value": "net60"      },
+        { "label": "Net 90",          "value": "net90"      },
+        { "label": "Milestone-based", "value": "milestone"  }
+      ]
+    },
+    {
+      "type": "textarea",
+      "id": "internalNotes",
+      "key": "internalNotes",
+      "label": "Internal notes"
+    }
+  ]
+}
+</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0y97n6x</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_09amf86</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_1n0yx11" name="Revise and approve of the contract">
-      <bpmn:incoming>SequenceFlow_09amf86</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1bf86yz</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0mtj18m" sourceRef="Activity_1ypmm2e" targetRef="Gateway_0r5d03f" />
-    <bpmn:sequenceFlow id="Flow_10fact3" sourceRef="Gateway_0r5d03f" targetRef="Event_152v5ss" />
-    <bpmn:sequenceFlow id="Flow_0wf6t4a" sourceRef="Event_152v5ss" targetRef="Activity_1yiw265" />
-    <bpmn:intermediateCatchEvent id="Event_152v5ss">
+    <bpmn:sequenceFlow id="Flow_0mtj18m" sourceRef="ST_SendContractToClient" targetRef="Gateway_0r5d03f" />
+    <bpmn:sequenceFlow id="Flow_10fact3" sourceRef="Gateway_0r5d03f" targetRef="MICE_" />
+    <bpmn:sequenceFlow id="Flow_0wf6t4a" sourceRef="MICE_" targetRef="UT_CheckClientSignature" />
+    <bpmn:intermediateCatchEvent id="MICE_">
       <bpmn:incoming>Flow_10fact3</bpmn:incoming>
       <bpmn:outgoing>Flow_0wf6t4a</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_04eeygm" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_04eeygm" messageRef="Message_0qnmmu7" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:userTask id="Activity_09h4211" name="Verifiy the client interest">
+    <bpmn:userTask id="UT_VerifyInterest" name="Verifiy the client interest">
       <bpmn:incoming>Flow_148dbqy</bpmn:incoming>
       <bpmn:outgoing>Flow_0ewq7vc</bpmn:outgoing>
     </bpmn:userTask>
@@ -107,7 +173,7 @@
       <bpmn:incoming>Flow_1wi1hsk</bpmn:incoming>
       <bpmn:outgoing>Flow_1hk8u2h</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="Activity_1x2ei25" name="Record the reasons for rejection">
+    <bpmn:userTask id="UT_RecordRejection" name="Record the reasons for rejection">
       <bpmn:incoming>Flow_00jrcwp</bpmn:incoming>
       <bpmn:outgoing>Flow_1ox5hdy</bpmn:outgoing>
     </bpmn:userTask>
@@ -115,7 +181,7 @@
       <bpmn:incoming>Flow_0ewq7vc</bpmn:incoming>
       <bpmn:outgoing>Flow_00jrcwp</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="Activity_1yiw265" name="Check client signature and register the contract">
+    <bpmn:userTask id="UT_CheckClientSignature" name="Check client signature and register the contract">
       <bpmn:incoming>Flow_0wf6t4a</bpmn:incoming>
       <bpmn:outgoing>Flow_0ym4bt3</bpmn:outgoing>
     </bpmn:userTask>
@@ -128,7 +194,7 @@
       <bpmn:outgoing>SequenceFlow_0ips5ei</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0jdm7xg</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="Task_1pn7mg3" name="Issuance of proforma invoice">
+    <bpmn:serviceTask id="ST_IssueProformaInvoice" name="Issuance of proforma invoice">
       <bpmn:documentation textFormat="text/x-comments">description::&lt;p&gt;V&amp;yacute;&amp;scaron;e z&amp;aacute;lohy odpov&amp;iacute;d&amp;aacute; v&amp;yacute;&amp;scaron;i osobn&amp;iacute;ch n&amp;aacute;kladů na realizaci webov&amp;yacute;ch str&amp;aacute;nek&lt;/p&gt;</bpmn:documentation>
       <bpmn:incoming>SequenceFlow_0jdm7xg</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_07kirvy</bpmn:outgoing>
@@ -140,7 +206,12 @@
     <bpmn:endEvent id="Event_13drlsr" name="Business case completed">
       <bpmn:incoming>Flow_1ox5hdy</bpmn:incoming>
     </bpmn:endEvent>
+    <bpmn:userTask id="UT_SignContract" name="Electronically sign the contract">
+      <bpmn:incoming>SequenceFlow_09amf86</bpmn:incoming>
+      <bpmn:outgoing>Flow_1je5oe0</bpmn:outgoing>
+    </bpmn:userTask>
   </bpmn:process>
+  <bpmn:message id="Message_0qnmmu7" name="Messsage_ContractSigned" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_07lrpev">
       <bpmndi:BPMNShape id="Participant_0le2het_di" bpmnElement="Participant_0le2het" isHorizontal="true">
@@ -155,11 +226,7 @@
         <dc:Bounds x="183" y="469" width="1347" height="138" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0l2lbnq_di" bpmnElement="Task_0rgsvmr">
-        <dc:Bounds x="436" y="500" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_001xm0n_di" bpmnElement="Activity_1ypmm2e">
+      <bpmndi:BPMNShape id="Activity_001xm0n_di" bpmnElement="ST_SendContractToClient">
         <dc:Bounds x="436" y="182" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -184,18 +251,14 @@
           <dc:Bounds x="183" y="246" width="76" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_07rumis_di" bpmnElement="Task_1dtsb82">
+      <bpmndi:BPMNShape id="Activity_07rumis_di" bpmnElement="UT_CreateContract">
         <dc:Bounds x="280" y="182" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_00qn6n4_di" bpmnElement="Task_1n0yx11">
-        <dc:Bounds x="280" y="500" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_152v5ss_di" bpmnElement="Event_152v5ss">
+      <bpmndi:BPMNShape id="Event_152v5ss_di" bpmnElement="MICE_">
         <dc:Bounds x="682" y="204" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0radpls_di" bpmnElement="Activity_09h4211">
+      <bpmndi:BPMNShape id="Activity_0radpls_di" bpmnElement="UT_VerifyInterest">
         <dc:Bounds x="710" y="340" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -203,7 +266,7 @@
         <dc:Bounds x="1060" y="182" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1gvgdpx_di" bpmnElement="Activity_1x2ei25">
+      <bpmndi:BPMNShape id="Activity_1gvgdpx_di" bpmnElement="UT_RecordRejection">
         <dc:Bounds x="1060" y="340" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -213,7 +276,7 @@
           <dc:Bounds x="907" y="331" width="86" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_01foysx_di" bpmnElement="Activity_1yiw265">
+      <bpmndi:BPMNShape id="Activity_01foysx_di" bpmnElement="UT_CheckClientSignature">
         <dc:Bounds x="760" y="182" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -227,7 +290,7 @@
           <dc:Bounds x="1250" y="235" width="57" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1pqsqki_di" bpmnElement="Task_1pn7mg3">
+      <bpmndi:BPMNShape id="Activity_1pqsqki_di" bpmnElement="ST_IssueProformaInvoice">
         <dc:Bounds x="1320" y="182" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -243,6 +306,10 @@
           <dc:Bounds x="1205" y="405" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0l2lbnq_di" bpmnElement="UT_SignContract">
+        <dc:Bounds x="350" y="500" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0y97n6x_di" bpmnElement="SequenceFlow_0y97n6x">
         <di:waypoint x="238" y="222" />
         <di:waypoint x="280" y="222" />
@@ -252,20 +319,15 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_09amf86_di" bpmnElement="SequenceFlow_09amf86">
         <di:waypoint x="330" y="262" />
-        <di:waypoint x="330" y="500" />
+        <di:waypoint x="330" y="540" />
+        <di:waypoint x="350" y="540" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="-25" y="213.5" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1bf86yz_di" bpmnElement="SequenceFlow_1bf86yz">
-        <di:waypoint x="380" y="540" />
-        <di:waypoint x="436" y="540" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="45.5" y="360" width="90" height="20" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1je5oe0_di" bpmnElement="Flow_1je5oe0">
-        <di:waypoint x="486" y="500" />
+        <di:waypoint x="450" y="540" />
+        <di:waypoint x="486" y="540" />
         <di:waypoint x="486" y="262" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ewq7vc_di" bpmnElement="Flow_0ewq7vc">

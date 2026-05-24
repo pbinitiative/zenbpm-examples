@@ -7,6 +7,9 @@ import eu.bpm4.portal.zenbpm.model.ProcessDefinitionResponse;
 import eu.bpm4.portal.zenbpm.model.ProcessInstanceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -14,6 +17,7 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,8 +32,52 @@ public class TaskService {
 
     private final ZenBpmClient zenBpmClient;
 
+    /**
+     * Directory to scan for form JSON files.
+     * Each file must be named after the BPMN element ID it belongs to,
+     * e.g. UT_CreateContract.json.
+     *
+     * Configured via the PORTAL_FORMS_PATH environment variable (or
+     * portal.forms.path application property). Accepts any Spring resource
+     * prefix: "file:/app/forms/" for a volume-mounted directory or
+     * "classpath:forms/" as the built-in fallback.
+     */
+    @Value("${portal.forms.path:classpath:forms/}")
+    private String formsPath;
+
+    /**
+     * Map of BPMN elementId → form JSON string.
+     * Populated at startup by scanning the configured forms directory.
+     */
+    private final Map<String, String> formsByElementId;
+
     public TaskService(ZenBpmClient zenBpmClient) {
         this.zenBpmClient = zenBpmClient;
+        this.formsByElementId = new HashMap<>();
+    }
+
+    /**
+     * Loads form schemas after all properties have been injected.
+     * Called automatically by Spring via @PostConstruct.
+     */
+    @jakarta.annotation.PostConstruct
+    void loadForms() {
+        String pattern = formsPath.endsWith("/") ? formsPath + "*.json" : formsPath + "/*.json";
+        log.info("Loading form schemas from: {}", pattern);
+        try {
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources(pattern);
+            for (Resource resource : resources) {
+                String filename = resource.getFilename();
+                if (filename == null) continue;
+                String elementId = filename.substring(0, filename.lastIndexOf('.'));
+                String json = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                formsByElementId.put(elementId, json);
+                log.info("Loaded form schema for element '{}' ({} bytes)", elementId, json.length());
+            }
+        } catch (Exception e) {
+            log.warn("Could not load form schemas from '{}': {}", pattern, e.getMessage());
+        }
     }
 
     public List<TaskDto> getActiveTasks() {
@@ -120,6 +168,16 @@ public class TaskService {
         Instant createdAt = job.getCreatedAt() != null
                 ? Instant.parse(job.getCreatedAt())
                 : null;
+
+        // Merge ZEN_FORM into variables if a form schema exists for this element.
+        Map<String, Object> variables = job.getVariables() != null
+                ? new HashMap<>(job.getVariables())
+                : new HashMap<>();
+        String formJson = formsByElementId.get(job.getElementId());
+        if (formJson != null && !variables.containsKey("ZEN_FORM")) {
+            variables.put("ZEN_FORM", formJson);
+        }
+
         return new TaskDto(
                 job.getKey(),
                 job.getElementId(),
@@ -127,7 +185,7 @@ public class TaskService {
                 job.getProcessInstanceKey(),
                 job.getAssignee(),
                 createdAt,
-                job.getVariables()
+                Collections.unmodifiableMap(variables)
         );
     }
 }
