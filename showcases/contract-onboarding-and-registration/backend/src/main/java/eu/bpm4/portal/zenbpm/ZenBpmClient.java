@@ -3,6 +3,8 @@ package eu.bpm4.portal.zenbpm;
 import eu.bpm4.portal.zenbpm.model.CompleteJobRequest;
 import eu.bpm4.portal.zenbpm.model.JobResponse;
 import eu.bpm4.portal.zenbpm.model.PartitionedResponse;
+import eu.bpm4.portal.zenbpm.model.ProcessDefinitionResponse;
+import eu.bpm4.portal.zenbpm.model.ProcessInstanceResponse;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
@@ -59,6 +61,22 @@ public class ZenBpmClient {
                                         new ZenBpmException(clientResponse.statusCode(),
                                                 "ZenBPM returned: HTTP " + clientResponse.statusCode().value() + " — " + body))))
                 .bodyToMono(Void.class)
+                .block();
+    }
+
+    public ProcessInstanceResponse fetchProcessInstance(String key) {
+        return webClient.get()
+                .uri("/process-instances/{key}", key)
+                .retrieve()
+                .bodyToMono(ProcessInstanceResponse.class)
+                .block();
+    }
+
+    public ProcessDefinitionResponse fetchProcessDefinition(String key) {
+        return webClient.get()
+                .uri("/process-definitions/{key}", key)
+                .retrieve()
+                .bodyToMono(ProcessDefinitionResponse.class)
                 .block();
     }
 

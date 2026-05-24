@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pem="http://ibpm.cz/pem/metamodel" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.33.1" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <bpmn:collaboration id="Collaboration_07lrpev">
-    <bpmn:participant id="Participant_0le2het" name="Happy Comapny Ltd." processRef="Process_1" pem:databaseReference="data:23332">
+    <bpmn:participant id="Participant_0le2het" name="Happy Comapny Ltd." processRef="Process_Contract_Onboarding" pem:databaseReference="data:23332">
       <bpmn:documentation textFormat="text/x-comments" />
     </bpmn:participant>
-    <bpmn:participant id="Participant_0xpawzt" name="Client" />
-    <bpmn:messageFlow id="MessageFlow_0g48qij" sourceRef="Task_1pn7mg3" targetRef="Participant_0xpawzt" />
-    <bpmn:messageFlow id="Flow_0xk62jl" sourceRef="Activity_1ypmm2e" targetRef="Participant_0xpawzt" />
-    <bpmn:messageFlow id="Flow_1ivpl72" sourceRef="Participant_0xpawzt" targetRef="Event_152v5ss" />
+    <bpmn:participant id="Participant_Client" name="Client" />
+    <bpmn:messageFlow id="MessageFlow_0g48qij" sourceRef="Task_1pn7mg3" targetRef="Participant_Client" />
+    <bpmn:messageFlow id="Flow_0xk62jl" sourceRef="Activity_1ypmm2e" targetRef="Participant_Client" />
+    <bpmn:messageFlow id="Flow_1ivpl72" sourceRef="Participant_Client" targetRef="Event_152v5ss" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_1" isExecutable="false">
+  <bpmn:process id="Process_Contract_Onboarding" name="Contract Onboarding and Registration" isExecutable="false">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_0qy3ps6" name="Procurement" pem:databaseReference="role:35">
         <bpmn:documentation textFormat="text/x-comments" />
@@ -339,7 +339,7 @@
         <di:waypoint x="718" y="222" />
         <di:waypoint x="760" y="222" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Participant_0xpawzt_di" bpmnElement="Participant_0xpawzt" isHorizontal="true">
+      <bpmndi:BPMNShape id="Participant_0xpawzt_di" bpmnElement="Participant_Client" isHorizontal="true">
         <dc:Bounds x="153" y="79" width="1377" height="60" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>

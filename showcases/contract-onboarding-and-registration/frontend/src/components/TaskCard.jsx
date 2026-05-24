@@ -1,32 +1,32 @@
-export function TaskCard({ task, onOpen }) {
+export function TaskCard({ task, selected, onSelect }) {
   return (
-    <div style={{
-      border: '1px solid #e2e8f0',
-      borderRadius: 8,
-      padding: 16,
-      background: '#fff',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    }}>
-      <div>
-        <div style={{ fontWeight: 600, marginBottom: 4 }}>{task.elementId ?? task.key}</div>
-        <div style={{ fontSize: 13, color: '#718096' }}>
-          Instance: {task.processInstanceKey}
-          {task.assignee && ` · Assignee: ${task.assignee}`}
-        </div>
-      </div>
-      <button onClick={() => onOpen(task)} style={{
-        padding: '8px 16px',
-        background: '#3182ce',
-        color: '#fff',
-        border: 'none',
-        borderRadius: 6,
+    <button
+      onClick={() => onSelect(task)}
+      style={{
+        width: '100%',
+        textAlign: 'left',
+        padding: '12px 16px',
+        background: selected ? '#ebf8ff' : 'transparent',
+        borderLeft: `3px solid ${selected ? '#3182ce' : 'transparent'}`,
+        borderRight: 'none',
+        borderTop: 'none',
+        borderBottom: '1px solid #e2e8f0',
         cursor: 'pointer',
-        fontWeight: 500,
+        display: 'block',
+        transition: 'background 0.1s',
+      }}
+    >
+      <div style={{
+        fontWeight: 600, fontSize: 14,
+        color: selected ? '#2b6cb0' : '#2d3748',
+        marginBottom: 3,
+        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
       }}>
-        Open
-      </button>
-    </div>
+        {task.name ?? task.elementId ?? task.key}
+      </div>
+      <div style={{ fontSize: 12, color: '#a0aec0' }}>
+        {task.assignee ? `Assignee: ${task.assignee}` : 'Unassigned'}
+      </div>
+    </button>
   );
 }
