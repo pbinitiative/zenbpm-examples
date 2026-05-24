@@ -44,7 +44,7 @@ services:
     environment:
       ZENBPM_BASE_URL: http://zenbpm:8080/v1
       PORTAL_CORS_ALLOWED_ORIGINS: http://localhost:5173
-      PORTAL_PROCESS_DEFAULT_KEY: contract_onboarding_and_registration
+      PORTAL_PROCESS_DEFAULT_KEY: Process_Contract_Onboarding
     depends_on:
       zenbpm:
         condition: service_healthy
