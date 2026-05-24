@@ -64,13 +64,14 @@ public class ZenBpmClient {
 
     public void startProcessInstance(String processKey, Map<String, Object> variables, String businessKey) {
         Map<String, Object> body = new java.util.HashMap<>();
+        body.put("bpmnProcessId", processKey);
         body.put("variables", variables);
         if (businessKey != null) {
             body.put("businessKey", businessKey);
         }
 
         webClient.post()
-                .uri("/processes/{processKey}/instances", processKey)
+                .uri("/process-instances")
                 .bodyValue(body)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, clientResponse ->
