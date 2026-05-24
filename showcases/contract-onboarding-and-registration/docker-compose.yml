@@ -16,7 +16,7 @@ services:
     command:
       - |
         echo "Deploying contract onboarding process..."
-        for f in /process/*.bpmn; do
+        for f in /process/*.bpmn /process/*.dmn; do
           [ -f "$$f" ] || continue
           echo "  -> $$f"
           curl -sfS -X POST http://zenbpm:8080/v1/process-definitions -F "resource=@$$f"
