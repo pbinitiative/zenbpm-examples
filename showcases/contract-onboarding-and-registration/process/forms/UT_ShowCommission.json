@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 12,
+  "type": "default",
+  "id": "showCommission",
+  "components": [
+    {
+      "type": "text",
+      "id": "commissionMessage",
+      "text": "We are pleased to award you a commission of **{{= if commission != null then commission.commission else \"N/A\"}}** USD in recognition of your contribution to closing the new contract with **{{= clientName}}**.\n\nThank you for your dedication and excellent work."
+    }
+  ]
+}

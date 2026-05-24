@@ -12,6 +12,19 @@
     },
     {
       "type": "select",
+      "id": "clientRegion",
+      "key": "clientRegion",
+      "label": "Client region",
+      "values": [
+        { "label": "North America", "value": "North America" },
+        { "label": "EMEA",          "value": "EMEA"          },
+        { "label": "APAC",          "value": "APAC"          },
+        { "label": "LATAM",         "value": "LATAM"         }
+      ],
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
       "id": "accountManager",
       "key": "accountManager",
       "label": "Account manager",
@@ -35,7 +48,7 @@
       "validate": { "required": true }
     },
     {
-      "type": "textfield",
+      "type": "number",
       "id": "contractValue",
       "key": "contractValue",
       "label": "Contract value (USD)",

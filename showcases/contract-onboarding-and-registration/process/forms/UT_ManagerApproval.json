@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 12,
+  "type": "default",
+  "id": "managerApproval",
+  "components": [
+    {
+      "type": "text",
+      "id": "approvalInfo",
+      "text": "Please review the commission for approval.\n\n**Client:** {{= clientName }}\n**Region:** {{= clientRegion }}\n**Contract type:** {{= contractType }}\n**Contract value:** {{= contractValue }} USD\n**Payment terms:** {{= paymentTerms }}\n\n**Proposed commission: {{= commission.commission }} USD**"
+    }
+  ]
+}

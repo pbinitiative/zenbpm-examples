@@ -13,6 +13,6 @@ public class SendContractToClientWorker {
 
     @JobWorker("send-contract-to-client")
     public void handle(JobContext ctx) {
-        log.info("Handling job '{}', variables: {}", ctx.getWaitingJob().getKey(), ctx.getVariables());
+        log.info("Sending contract to client per email. Job '{}', variables: {}", ctx.getWaitingJob().getKey(), ctx.getVariables());
     }
 }
