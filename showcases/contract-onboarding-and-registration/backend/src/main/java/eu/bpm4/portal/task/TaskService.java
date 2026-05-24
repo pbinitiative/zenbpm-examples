@@ -30,7 +30,7 @@ public class TaskService {
 
     private TaskDto toDto(JobResponse job) {
         Instant createdAt = job.getCreatedAt() != null
-                ? Instant.ofEpochMilli(job.getCreatedAt())
+                ? Instant.parse(job.getCreatedAt())
                 : null;
         return new TaskDto(
                 job.getKey(),

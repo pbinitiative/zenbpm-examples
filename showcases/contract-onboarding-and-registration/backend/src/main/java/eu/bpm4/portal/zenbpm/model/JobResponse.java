@@ -15,7 +15,7 @@ public class JobResponse {
     private String elementId;
     private String processInstanceKey;
     private String assignee;
-    private Long createdAt;
+    private String createdAt;
     private String type;
     private Map<String, Object> variables;
 }
