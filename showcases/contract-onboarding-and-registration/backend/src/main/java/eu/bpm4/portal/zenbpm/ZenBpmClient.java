@@ -27,7 +27,7 @@ public class ZenBpmClient {
                 .uri(uriBuilder -> uriBuilder
                         .path("/jobs")
                         .queryParam("state", "active")
-                        .queryParam("jobType", "user-task")
+                        .queryParam("jobType", "user-task-type")
                         .build())
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, clientResponse ->
