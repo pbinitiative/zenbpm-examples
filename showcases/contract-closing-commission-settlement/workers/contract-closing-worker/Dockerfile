@@ -1,0 +1,18 @@
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+
+# Build zenbpm-java-client from source — not published to any registry
+RUN git clone --depth 1 https://github.com/pbinitiative/zenbpm-java-client.git /workspace/zenbpm-java-client && \
+    cd /workspace/zenbpm-java-client && \
+    mvn -B install -DskipTests -q
+
+WORKDIR /workspace/app
+COPY pom.xml .
+COPY src ./src
+RUN mvn -B package -DskipTests
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /workspace/app/target/contract-closing-worker-0.0.1-SNAPSHOT.jar ./contract-closing-worker.jar
+
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/contract-closing-worker.jar"]

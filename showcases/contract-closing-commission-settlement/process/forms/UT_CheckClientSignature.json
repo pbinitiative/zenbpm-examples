@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 12,
+  "type": "default",
+  "id": "checkClientSignature",
+  "components": [
+    {
+      "type": "text",
+      "id": "instructions",
+      "text": "### Check client signature\n\nReview the signed contract received from the client. Verify that the signature is present, legible, and matches the client on record before registering the contract."
+    },
+    {
+      "type": "checkbox",
+      "id": "signatureConfirmed",
+      "key": "signatureConfirmed",
+      "label": "I confirm that the client signature is valid and the contract is ready for registration",
+      "validate": {
+        "required": true
+      }
+    }
+  ]
+}
