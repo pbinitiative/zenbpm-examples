@@ -23,6 +23,6 @@ public class PortalProperties {
     @Getter
     @Setter
     public static class Process {
-        private String defaultKey = "my-process-key";
+        private String defaultKey = "Process_Contract_Closing";
     }
 }
