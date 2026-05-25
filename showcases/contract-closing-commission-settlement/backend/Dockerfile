@@ -10,6 +10,6 @@ RUN mvn package -DskipTests -q
 FROM eclipse-temurin:21-jre-alpine
 RUN apk add --no-cache curl
 WORKDIR /app
-COPY --from=build /app/target/*.jar contract-onboarding-backend.jar
+COPY --from=build /app/target/*.jar contract-closing-backend.jar
 EXPOSE 8081
-ENTRYPOINT ["java", "-jar", "contract-onboarding-backend.jar"]
+ENTRYPOINT ["java", "-jar", "contract-closing-backend.jar"]

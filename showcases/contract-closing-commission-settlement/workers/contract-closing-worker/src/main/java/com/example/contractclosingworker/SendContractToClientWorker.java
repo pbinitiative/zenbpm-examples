@@ -1,4 +1,4 @@
-package com.example.contractonboardingworker;
+package com.example.contractclosingworker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

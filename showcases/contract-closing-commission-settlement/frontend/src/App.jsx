@@ -27,7 +27,7 @@ export default function App() {
         borderBottom: '1px solid #e2e8f0', flexShrink: 0,
       }}>
         <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#1a202c' }}>
-          Contract Onboarding
+          Contract Closing & Commission Settlement
         </h1>
         <button
           onClick={() => setShowStartProcess(true)}

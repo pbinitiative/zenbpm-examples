@@ -5,7 +5,7 @@ include:
 # Verify this matches if the root docker-compose.yml is ever renamed.
 
 services:
-  deploy-contract-onboarding:
+  deploy-contract-closing:
     image: curlimages/curl:latest
     restart: on-failure
     depends_on:
@@ -40,9 +40,9 @@ services:
         done
         echo "Done."
 
-  contract-onboarding-worker:
+  contract-closing-worker:
     build:
-      context: ./workers/contract-onboarding-worker
+      context: ./workers/contract-closing-worker
     restart: unless-stopped
     environment:
       ZENBPM_GRPC_HOST: zenbpm
@@ -51,7 +51,7 @@ services:
       zenbpm:
         condition: service_healthy
 
-  contract-onboarding-backend:
+  contract-closing-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -62,7 +62,7 @@ services:
     environment:
       ZENBPM_BASE_URL: http://zenbpm:8080/v1
       PORTAL_CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
-      PORTAL_PROCESS_DEFAULT_KEY: Process_Contract_Onboarding
+      PORTAL_PROCESS_DEFAULT_KEY: Process_Contract_Closing
       PORTAL_FORMS_PATH: file:/app/forms/
     depends_on:
       zenbpm:
@@ -73,12 +73,12 @@ services:
       timeout: 5s
       retries: 5
 
-  contract-onboarding-frontend:
+  contract-closing-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "3000:80"
     depends_on:
-      contract-onboarding-backend:
+      contract-closing-backend:
         condition: service_healthy
