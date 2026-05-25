@@ -42,7 +42,7 @@ services:
 
   contract-closing-worker:
     build:
-      context: ./workers/contract-closing-worker
+      context: ./workers
     restart: unless-stopped
     environment:
       ZENBPM_GRPC_HOST: zenbpm
