@@ -1,467 +1,1065 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="DRD_commission" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.33.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.6.0">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+             id="DRD_commission" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler"
+             exporterVersion="5.33.1" modeler:executionPlatform="Camunda Cloud"
+             modeler:executionPlatformVersion="8.6.0">
 
   <!--
-    Commission decision: clientRegion × contractValue × contractType × paymentTerms  (48 rules)
+Commission decision: clientRegion × contractValue × contractType × paymentTerms  (48 rules)
 
-    Base rates by region (low < 10 000 / high >= 10 000):
-      North America : 5 % / 10 %   paymentTerms: ignored
-      APAC          : 4 % /  9 %   paymentTerms: ignored
-      LATAM         : 3 % /  8 %   paymentTerms: ignored
-      EMEA          : see below    paymentTerms: applied
+Base rates by region (low < 10 000 / high >= 10 000):
+North America : 5 % / 10 %   paymentTerms: ignored
+APAC          : 4 % /  9 %   paymentTerms: ignored
+LATAM         : 3 % /  8 %   paymentTerms: ignored
+EMEA          : see below    paymentTerms: applied
 
-    Contract-type bonus on top of base:
-      standard   : +0 %
-      framework  : +2 %
-      individual : +3 %
+Contract-type bonus on top of base:
+standard   : +0 %
+framework  : +2 %
+individual : +3 %
 
-    EMEA payment-terms adjustment on top of base+type:
-      prepayment : +1 %   (best cash flow for company)
-      net30      :  0 %
-      net60      :  0 %
-      net90      : -1 %   (delayed payment risk)
-      milestone  :  0 %
-  -->
+EMEA payment-terms adjustment on top of base+type:
+prepayment : +1 %   (best cash flow for company)
+net30      :  0 %
+net60      :  0 %
+net90      : -1 %   (delayed payment risk)
+milestone  :  0 %
+-->
   <decision id="DMN_salesperson_commission" name="Setting the salesperson's commission">
     <decisionTable id="DecisionTable_commission" hitPolicy="UNIQUE">
 
       <input id="InputClause_region" label="Client Region">
-        <inputExpression id="LE_region" typeRef="string"><text>clientRegion</text></inputExpression>
+        <inputExpression id="LE_region" typeRef="string">
+          <text>clientRegion</text>
+        </inputExpression>
       </input>
       <input id="InputClause_value" label="Contract Value">
-        <inputExpression id="LE_value" typeRef="number"><text>contractValue</text></inputExpression>
+        <inputExpression id="LE_value" typeRef="number">
+          <text>contractValue</text>
+        </inputExpression>
       </input>
       <input id="InputClause_type" label="Contract Type">
-        <inputExpression id="LE_type" typeRef="string"><text>contractType</text></inputExpression>
+        <inputExpression id="LE_type" typeRef="string">
+          <text>contractType</text>
+        </inputExpression>
       </input>
       <input id="InputClause_payment" label="Payment Terms">
-        <inputExpression id="LE_payment" typeRef="string"><text>paymentTerms</text></inputExpression>
+        <inputExpression id="LE_payment" typeRef="string">
+          <text>paymentTerms</text>
+        </inputExpression>
       </input>
 
-      <output id="OutputClause_commission" label="Commission" name="commission" typeRef="number" />
-      <output id="OutputClause_approval" label="Approval Required" name="approvalRequired" typeRef="boolean" />
+      <output id="OutputClause_commission" label="Commission" name="commission" typeRef="number"/>
+      <output id="OutputClause_approval" label="Approval Required" name="approvalRequired" typeRef="boolean"/>
 
       <!-- ═══════════════════════════════════════════════════
-           NORTH AMERICA  —  paymentTerms: any (empty = wildcard)
-           ═══════════════════════════════════════════════════ -->
+NORTH AMERICA  —  paymentTerms: any (empty = wildcard)
+═══════════════════════════════════════════════════ -->
       <rule id="R_NA_std_low">
-        <inputEntry id="I_NA_std_low_r"><text>"North America"</text></inputEntry>
-        <inputEntry id="I_NA_std_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_NA_std_low_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_NA_std_low_p"><text></text></inputEntry>
-        <outputEntry id="O_NA_std_low"><text>contractValue * 0.05</text></outputEntry>
-        <outputEntry id="OA_NA_std_low"><text>false</text></outputEntry>
+        <inputEntry id="I_NA_std_low_r">
+          <text>"North America"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_std_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_NA_std_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_std_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_NA_std_low">
+          <text>contractValue * 0.05</text>
+        </outputEntry>
+        <outputEntry id="OA_NA_std_low">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_NA_std_high">
-        <inputEntry id="I_NA_std_high_r"><text>"North America"</text></inputEntry>
-        <inputEntry id="I_NA_std_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_NA_std_high_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_NA_std_high_p"><text></text></inputEntry>
-        <outputEntry id="O_NA_std_high"><text>contractValue * 0.10</text></outputEntry>
-        <outputEntry id="OA_NA_std_high"><text>false</text></outputEntry>
+        <inputEntry id="I_NA_std_high_r">
+          <text>"North America"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_std_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_NA_std_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_std_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_NA_std_high">
+          <text>contractValue * 0.10</text>
+        </outputEntry>
+        <outputEntry id="OA_NA_std_high">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_NA_frm_low">
-        <inputEntry id="I_NA_frm_low_r"><text>"North America"</text></inputEntry>
-        <inputEntry id="I_NA_frm_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_NA_frm_low_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_NA_frm_low_p"><text></text></inputEntry>
-        <outputEntry id="O_NA_frm_low"><text>contractValue * 0.07</text></outputEntry>
-        <outputEntry id="OA_NA_frm_low"><text>false</text></outputEntry>
+        <inputEntry id="I_NA_frm_low_r">
+          <text>"North America"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_frm_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_NA_frm_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_frm_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_NA_frm_low">
+          <text>contractValue * 0.07</text>
+        </outputEntry>
+        <outputEntry id="OA_NA_frm_low">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_NA_frm_high">
-        <inputEntry id="I_NA_frm_high_r"><text>"North America"</text></inputEntry>
-        <inputEntry id="I_NA_frm_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_NA_frm_high_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_NA_frm_high_p"><text></text></inputEntry>
-        <outputEntry id="O_NA_frm_high"><text>contractValue * 0.12</text></outputEntry>
-        <outputEntry id="OA_NA_frm_high"><text>false</text></outputEntry>
+        <inputEntry id="I_NA_frm_high_r">
+          <text>"North America"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_frm_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_NA_frm_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_frm_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_NA_frm_high">
+          <text>contractValue * 0.12</text>
+        </outputEntry>
+        <outputEntry id="OA_NA_frm_high">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_NA_ind_low">
-        <inputEntry id="I_NA_ind_low_r"><text>"North America"</text></inputEntry>
-        <inputEntry id="I_NA_ind_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_NA_ind_low_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_NA_ind_low_p"><text></text></inputEntry>
-        <outputEntry id="O_NA_ind_low"><text>contractValue * 0.08</text></outputEntry>
-        <outputEntry id="OA_NA_ind_low"><text>false</text></outputEntry>
+        <inputEntry id="I_NA_ind_low_r">
+          <text>"North America"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_ind_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_NA_ind_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_ind_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_NA_ind_low">
+          <text>contractValue * 0.08</text>
+        </outputEntry>
+        <outputEntry id="OA_NA_ind_low">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_NA_ind_high">
-        <inputEntry id="I_NA_ind_high_r"><text>"North America"</text></inputEntry>
-        <inputEntry id="I_NA_ind_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_NA_ind_high_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_NA_ind_high_p"><text></text></inputEntry>
-        <outputEntry id="O_NA_ind_high"><text>contractValue * 0.13</text></outputEntry>
-        <outputEntry id="OA_NA_ind_high"><text>false</text></outputEntry>
+        <inputEntry id="I_NA_ind_high_r">
+          <text>"North America"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_ind_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_NA_ind_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_NA_ind_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_NA_ind_high">
+          <text>contractValue * 0.13</text>
+        </outputEntry>
+        <outputEntry id="OA_NA_ind_high">
+          <text>false</text>
+        </outputEntry>
       </rule>
 
       <!-- ═══════════════════════════════════════════════════
-           APAC  —  paymentTerms: any
-           ═══════════════════════════════════════════════════ -->
+APAC  —  paymentTerms: any
+═══════════════════════════════════════════════════ -->
       <rule id="R_APAC_std_low">
-        <inputEntry id="I_APAC_std_low_r"><text>"APAC"</text></inputEntry>
-        <inputEntry id="I_APAC_std_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_APAC_std_low_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_APAC_std_low_p"><text></text></inputEntry>
-        <outputEntry id="O_APAC_std_low"><text>contractValue * 0.04</text></outputEntry>
-        <outputEntry id="OA_APAC_std_low"><text>false</text></outputEntry>
+        <inputEntry id="I_APAC_std_low_r">
+          <text>"APAC"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_std_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_std_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_std_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_APAC_std_low">
+          <text>contractValue * 0.04</text>
+        </outputEntry>
+        <outputEntry id="OA_APAC_std_low">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_APAC_std_high">
-        <inputEntry id="I_APAC_std_high_r"><text>"APAC"</text></inputEntry>
-        <inputEntry id="I_APAC_std_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_APAC_std_high_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_APAC_std_high_p"><text></text></inputEntry>
-        <outputEntry id="O_APAC_std_high"><text>contractValue * 0.09</text></outputEntry>
-        <outputEntry id="OA_APAC_std_high"><text>false</text></outputEntry>
+        <inputEntry id="I_APAC_std_high_r">
+          <text>"APAC"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_std_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_std_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_std_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_APAC_std_high">
+          <text>contractValue * 0.09</text>
+        </outputEntry>
+        <outputEntry id="OA_APAC_std_high">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_APAC_frm_low">
-        <inputEntry id="I_APAC_frm_low_r"><text>"APAC"</text></inputEntry>
-        <inputEntry id="I_APAC_frm_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_APAC_frm_low_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_APAC_frm_low_p"><text></text></inputEntry>
-        <outputEntry id="O_APAC_frm_low"><text>contractValue * 0.06</text></outputEntry>
-        <outputEntry id="OA_APAC_frm_low"><text>false</text></outputEntry>
+        <inputEntry id="I_APAC_frm_low_r">
+          <text>"APAC"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_frm_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_frm_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_frm_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_APAC_frm_low">
+          <text>contractValue * 0.06</text>
+        </outputEntry>
+        <outputEntry id="OA_APAC_frm_low">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_APAC_frm_high">
-        <inputEntry id="I_APAC_frm_high_r"><text>"APAC"</text></inputEntry>
-        <inputEntry id="I_APAC_frm_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_APAC_frm_high_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_APAC_frm_high_p"><text></text></inputEntry>
-        <outputEntry id="O_APAC_frm_high"><text>contractValue * 0.11</text></outputEntry>
-        <outputEntry id="OA_APAC_frm_high"><text>false</text></outputEntry>
+        <inputEntry id="I_APAC_frm_high_r">
+          <text>"APAC"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_frm_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_frm_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_frm_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_APAC_frm_high">
+          <text>contractValue * 0.11</text>
+        </outputEntry>
+        <outputEntry id="OA_APAC_frm_high">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_APAC_ind_low">
-        <inputEntry id="I_APAC_ind_low_r"><text>"APAC"</text></inputEntry>
-        <inputEntry id="I_APAC_ind_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_APAC_ind_low_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_APAC_ind_low_p"><text></text></inputEntry>
-        <outputEntry id="O_APAC_ind_low"><text>contractValue * 0.07</text></outputEntry>
-        <outputEntry id="OA_APAC_ind_low"><text>false</text></outputEntry>
+        <inputEntry id="I_APAC_ind_low_r">
+          <text>"APAC"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_ind_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_ind_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_ind_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_APAC_ind_low">
+          <text>contractValue * 0.07</text>
+        </outputEntry>
+        <outputEntry id="OA_APAC_ind_low">
+          <text>false</text>
+        </outputEntry>
       </rule>
       <rule id="R_APAC_ind_high">
-        <inputEntry id="I_APAC_ind_high_r"><text>"APAC"</text></inputEntry>
-        <inputEntry id="I_APAC_ind_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_APAC_ind_high_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_APAC_ind_high_p"><text></text></inputEntry>
-        <outputEntry id="O_APAC_ind_high"><text>contractValue * 0.12</text></outputEntry>
-        <outputEntry id="OA_APAC_ind_high"><text>false</text></outputEntry>
+        <inputEntry id="I_APAC_ind_high_r">
+          <text>"APAC"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_ind_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_ind_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_APAC_ind_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_APAC_ind_high">
+          <text>contractValue * 0.12</text>
+        </outputEntry>
+        <outputEntry id="OA_APAC_ind_high">
+          <text>false</text>
+        </outputEntry>
       </rule>
 
       <!-- ═══════════════════════════════════════════════════
-           LATAM  —  paymentTerms: any
-           ═══════════════════════════════════════════════════ -->
+LATAM  —  paymentTerms: any
+═══════════════════════════════════════════════════ -->
       <rule id="R_LATAM_std_low">
-        <inputEntry id="I_LATAM_std_low_r"><text>"LATAM"</text></inputEntry>
-        <inputEntry id="I_LATAM_std_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_LATAM_std_low_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_LATAM_std_low_p"><text></text></inputEntry>
-        <outputEntry id="O_LATAM_std_low"><text>contractValue * 0.03</text></outputEntry>
-        <outputEntry id="OA_LATAM_std_low"><text>true</text></outputEntry>
+        <inputEntry id="I_LATAM_std_low_r">
+          <text>"LATAM"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_std_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_std_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_std_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_LATAM_std_low">
+          <text>contractValue * 0.03</text>
+        </outputEntry>
+        <outputEntry id="OA_LATAM_std_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_LATAM_std_high">
-        <inputEntry id="I_LATAM_std_high_r"><text>"LATAM"</text></inputEntry>
-        <inputEntry id="I_LATAM_std_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_LATAM_std_high_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_LATAM_std_high_p"><text></text></inputEntry>
-        <outputEntry id="O_LATAM_std_high"><text>contractValue * 0.08</text></outputEntry>
-        <outputEntry id="OA_LATAM_std_high"><text>true</text></outputEntry>
+        <inputEntry id="I_LATAM_std_high_r">
+          <text>"LATAM"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_std_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_std_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_std_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_LATAM_std_high">
+          <text>contractValue * 0.08</text>
+        </outputEntry>
+        <outputEntry id="OA_LATAM_std_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_LATAM_frm_low">
-        <inputEntry id="I_LATAM_frm_low_r"><text>"LATAM"</text></inputEntry>
-        <inputEntry id="I_LATAM_frm_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_LATAM_frm_low_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_LATAM_frm_low_p"><text></text></inputEntry>
-        <outputEntry id="O_LATAM_frm_low"><text>contractValue * 0.05</text></outputEntry>
-        <outputEntry id="OA_LATAM_frm_low"><text>true</text></outputEntry>
+        <inputEntry id="I_LATAM_frm_low_r">
+          <text>"LATAM"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_frm_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_frm_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_frm_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_LATAM_frm_low">
+          <text>contractValue * 0.05</text>
+        </outputEntry>
+        <outputEntry id="OA_LATAM_frm_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_LATAM_frm_high">
-        <inputEntry id="I_LATAM_frm_high_r"><text>"LATAM"</text></inputEntry>
-        <inputEntry id="I_LATAM_frm_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_LATAM_frm_high_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_LATAM_frm_high_p"><text></text></inputEntry>
-        <outputEntry id="O_LATAM_frm_high"><text>contractValue * 0.10</text></outputEntry>
-        <outputEntry id="OA_LATAM_frm_high"><text>true</text></outputEntry>
+        <inputEntry id="I_LATAM_frm_high_r">
+          <text>"LATAM"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_frm_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_frm_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_frm_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_LATAM_frm_high">
+          <text>contractValue * 0.10</text>
+        </outputEntry>
+        <outputEntry id="OA_LATAM_frm_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_LATAM_ind_low">
-        <inputEntry id="I_LATAM_ind_low_r"><text>"LATAM"</text></inputEntry>
-        <inputEntry id="I_LATAM_ind_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_LATAM_ind_low_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_LATAM_ind_low_p"><text></text></inputEntry>
-        <outputEntry id="O_LATAM_ind_low"><text>contractValue * 0.06</text></outputEntry>
-        <outputEntry id="OA_LATAM_ind_low"><text>true</text></outputEntry>
+        <inputEntry id="I_LATAM_ind_low_r">
+          <text>"LATAM"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_ind_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_ind_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_ind_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_LATAM_ind_low">
+          <text>contractValue * 0.06</text>
+        </outputEntry>
+        <outputEntry id="OA_LATAM_ind_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_LATAM_ind_high">
-        <inputEntry id="I_LATAM_ind_high_r"><text>"LATAM"</text></inputEntry>
-        <inputEntry id="I_LATAM_ind_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_LATAM_ind_high_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_LATAM_ind_high_p"><text></text></inputEntry>
-        <outputEntry id="O_LATAM_ind_high"><text>contractValue * 0.11</text></outputEntry>
-        <outputEntry id="OA_LATAM_ind_high"><text>true</text></outputEntry>
+        <inputEntry id="I_LATAM_ind_high_r">
+          <text>"LATAM"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_ind_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_ind_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_LATAM_ind_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_LATAM_ind_high">
+          <text>contractValue * 0.11</text>
+        </outputEntry>
+        <outputEntry id="OA_LATAM_ind_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
 
       <!-- ═══════════════════════════════════════════════════
-           EMEA  —  paymentTerms matters
-           Base rates: standard 5/10 %, framework 7/12 %, individual 8/13 %
-           prepayment +1 %, net90 -1 %, net30/net60/milestone 0 %
-           ═══════════════════════════════════════════════════ -->
+EMEA  —  paymentTerms matters
+Base rates: standard 5/10 %, framework 7/12 %, individual 8/13 %
+prepayment +1 %, net90 -1 %, net30/net60/milestone 0 %
+═══════════════════════════════════════════════════ -->
 
       <!-- EMEA · standard · prepayment (+1 %) -->
       <rule id="R_EMEA_std_pre_low">
-        <inputEntry id="I_EMEA_std_pre_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_pre_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_pre_low_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_pre_low_p"><text>"prepayment"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_pre_low"><text>contractValue * 0.06</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_pre_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_pre_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_pre_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_pre_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_pre_low_p">
+          <text>"prepayment"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_pre_low">
+          <text>contractValue * 0.06</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_pre_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_std_pre_high">
-        <inputEntry id="I_EMEA_std_pre_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_pre_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_pre_high_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_pre_high_p"><text>"prepayment"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_pre_high"><text>contractValue * 0.11</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_pre_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_pre_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_pre_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_pre_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_pre_high_p">
+          <text>"prepayment"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_pre_high">
+          <text>contractValue * 0.11</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_pre_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · standard · net30 (base) -->
       <rule id="R_EMEA_std_n30_low">
-        <inputEntry id="I_EMEA_std_n30_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n30_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n30_low_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n30_low_p"><text>"net30"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_n30_low"><text>contractValue * 0.05</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_n30_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_n30_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n30_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n30_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n30_low_p">
+          <text>"net30"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_n30_low">
+          <text>contractValue * 0.05</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_n30_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_std_n30_high">
-        <inputEntry id="I_EMEA_std_n30_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n30_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n30_high_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n30_high_p"><text>"net30"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_n30_high"><text>contractValue * 0.10</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_n30_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_n30_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n30_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n30_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n30_high_p">
+          <text>"net30"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_n30_high">
+          <text>contractValue * 0.10</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_n30_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · standard · net60 (base) -->
       <rule id="R_EMEA_std_n60_low">
-        <inputEntry id="I_EMEA_std_n60_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n60_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n60_low_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n60_low_p"><text>"net60"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_n60_low"><text>contractValue * 0.05</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_n60_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_n60_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n60_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n60_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n60_low_p">
+          <text>"net60"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_n60_low">
+          <text>contractValue * 0.05</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_n60_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_std_n60_high">
-        <inputEntry id="I_EMEA_std_n60_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n60_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n60_high_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n60_high_p"><text>"net60"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_n60_high"><text>contractValue * 0.10</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_n60_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_n60_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n60_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n60_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n60_high_p">
+          <text>"net60"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_n60_high">
+          <text>contractValue * 0.10</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_n60_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · standard · net90 (-1 %) -->
       <rule id="R_EMEA_std_n90_low">
-        <inputEntry id="I_EMEA_std_n90_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n90_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n90_low_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n90_low_p"><text>"net90"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_n90_low"><text>contractValue * 0.04</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_n90_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_n90_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n90_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n90_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n90_low_p">
+          <text>"net90"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_n90_low">
+          <text>contractValue * 0.04</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_n90_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_std_n90_high">
-        <inputEntry id="I_EMEA_std_n90_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n90_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n90_high_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_n90_high_p"><text>"net90"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_n90_high"><text>contractValue * 0.09</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_n90_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_n90_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n90_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n90_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_n90_high_p">
+          <text>"net90"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_n90_high">
+          <text>contractValue * 0.09</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_n90_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · standard · milestone (base) -->
       <rule id="R_EMEA_std_mil_low">
-        <inputEntry id="I_EMEA_std_mil_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_mil_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_mil_low_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_mil_low_p"><text>"milestone"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_mil_low"><text>contractValue * 0.05</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_mil_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_mil_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_mil_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_mil_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_mil_low_p">
+          <text>"milestone"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_mil_low">
+          <text>contractValue * 0.05</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_mil_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_std_mil_high">
-        <inputEntry id="I_EMEA_std_mil_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_mil_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_std_mil_high_t"><text>"standard"</text></inputEntry>
-        <inputEntry id="I_EMEA_std_mil_high_p"><text>"milestone"</text></inputEntry>
-        <outputEntry id="O_EMEA_std_mil_high"><text>contractValue * 0.10</text></outputEntry>
-        <outputEntry id="OA_EMEA_std_mil_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_std_mil_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_mil_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_mil_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_mil_high_p">
+          <text>"milestone"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_mil_high">
+          <text>contractValue * 0.10</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_mil_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
 
       <!-- EMEA · framework · prepayment (+1 %) -->
       <rule id="R_EMEA_frm_pre_low">
-        <inputEntry id="I_EMEA_frm_pre_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_pre_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_pre_low_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_pre_low_p"><text>"prepayment"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_pre_low"><text>contractValue * 0.08</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_pre_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_pre_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_pre_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_pre_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_pre_low_p">
+          <text>"prepayment"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_pre_low">
+          <text>contractValue * 0.08</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_pre_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_frm_pre_high">
-        <inputEntry id="I_EMEA_frm_pre_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_pre_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_pre_high_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_pre_high_p"><text>"prepayment"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_pre_high"><text>contractValue * 0.13</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_pre_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_pre_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_pre_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_pre_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_pre_high_p">
+          <text>"prepayment"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_pre_high">
+          <text>contractValue * 0.13</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_pre_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · framework · net30 (base) -->
       <rule id="R_EMEA_frm_n30_low">
-        <inputEntry id="I_EMEA_frm_n30_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n30_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n30_low_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n30_low_p"><text>"net30"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_n30_low"><text>contractValue * 0.07</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_n30_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_n30_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n30_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n30_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n30_low_p">
+          <text>"net30"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_n30_low">
+          <text>contractValue * 0.07</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_n30_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_frm_n30_high">
-        <inputEntry id="I_EMEA_frm_n30_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n30_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n30_high_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n30_high_p"><text>"net30"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_n30_high"><text>contractValue * 0.12</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_n30_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_n30_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n30_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n30_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n30_high_p">
+          <text>"net30"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_n30_high">
+          <text>contractValue * 0.12</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_n30_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · framework · net60 (base) -->
       <rule id="R_EMEA_frm_n60_low">
-        <inputEntry id="I_EMEA_frm_n60_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n60_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n60_low_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n60_low_p"><text>"net60"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_n60_low"><text>contractValue * 0.07</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_n60_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_n60_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n60_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n60_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n60_low_p">
+          <text>"net60"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_n60_low">
+          <text>contractValue * 0.07</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_n60_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_frm_n60_high">
-        <inputEntry id="I_EMEA_frm_n60_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n60_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n60_high_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n60_high_p"><text>"net60"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_n60_high"><text>contractValue * 0.12</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_n60_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_n60_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n60_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n60_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n60_high_p">
+          <text>"net60"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_n60_high">
+          <text>contractValue * 0.12</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_n60_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · framework · net90 (-1 %) -->
       <rule id="R_EMEA_frm_n90_low">
-        <inputEntry id="I_EMEA_frm_n90_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n90_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n90_low_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n90_low_p"><text>"net90"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_n90_low"><text>contractValue * 0.06</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_n90_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_n90_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n90_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n90_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n90_low_p">
+          <text>"net90"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_n90_low">
+          <text>contractValue * 0.06</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_n90_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_frm_n90_high">
-        <inputEntry id="I_EMEA_frm_n90_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n90_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n90_high_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_n90_high_p"><text>"net90"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_n90_high"><text>contractValue * 0.11</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_n90_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_n90_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n90_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n90_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_n90_high_p">
+          <text>"net90"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_n90_high">
+          <text>contractValue * 0.11</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_n90_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · framework · milestone (base) -->
       <rule id="R_EMEA_frm_mil_low">
-        <inputEntry id="I_EMEA_frm_mil_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_mil_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_mil_low_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_mil_low_p"><text>"milestone"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_mil_low"><text>contractValue * 0.07</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_mil_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_mil_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_mil_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_mil_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_mil_low_p">
+          <text>"milestone"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_mil_low">
+          <text>contractValue * 0.07</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_mil_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_frm_mil_high">
-        <inputEntry id="I_EMEA_frm_mil_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_mil_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_mil_high_t"><text>"framework"</text></inputEntry>
-        <inputEntry id="I_EMEA_frm_mil_high_p"><text>"milestone"</text></inputEntry>
-        <outputEntry id="O_EMEA_frm_mil_high"><text>contractValue * 0.12</text></outputEntry>
-        <outputEntry id="OA_EMEA_frm_mil_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_frm_mil_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_mil_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_mil_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_mil_high_p">
+          <text>"milestone"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_mil_high">
+          <text>contractValue * 0.12</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_mil_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
 
       <!-- EMEA · individual · prepayment (+1 %) -->
       <rule id="R_EMEA_ind_pre_low">
-        <inputEntry id="I_EMEA_ind_pre_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_pre_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_pre_low_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_pre_low_p"><text>"prepayment"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_pre_low"><text>contractValue * 0.09</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_pre_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_pre_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_pre_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_pre_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_pre_low_p">
+          <text>"prepayment"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_pre_low">
+          <text>contractValue * 0.09</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_pre_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_ind_pre_high">
-        <inputEntry id="I_EMEA_ind_pre_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_pre_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_pre_high_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_pre_high_p"><text>"prepayment"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_pre_high"><text>contractValue * 0.14</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_pre_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_pre_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_pre_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_pre_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_pre_high_p">
+          <text>"prepayment"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_pre_high">
+          <text>contractValue * 0.14</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_pre_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · individual · net30 (base) -->
       <rule id="R_EMEA_ind_n30_low">
-        <inputEntry id="I_EMEA_ind_n30_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n30_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n30_low_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n30_low_p"><text>"net30"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_n30_low"><text>contractValue * 0.08</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_n30_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_n30_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n30_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n30_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n30_low_p">
+          <text>"net30"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_n30_low">
+          <text>contractValue * 0.08</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_n30_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_ind_n30_high">
-        <inputEntry id="I_EMEA_ind_n30_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n30_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n30_high_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n30_high_p"><text>"net30"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_n30_high"><text>contractValue * 0.13</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_n30_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_n30_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n30_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n30_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n30_high_p">
+          <text>"net30"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_n30_high">
+          <text>contractValue * 0.13</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_n30_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · individual · net60 (base) -->
       <rule id="R_EMEA_ind_n60_low">
-        <inputEntry id="I_EMEA_ind_n60_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n60_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n60_low_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n60_low_p"><text>"net60"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_n60_low"><text>contractValue * 0.08</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_n60_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_n60_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n60_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n60_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n60_low_p">
+          <text>"net60"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_n60_low">
+          <text>contractValue * 0.08</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_n60_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_ind_n60_high">
-        <inputEntry id="I_EMEA_ind_n60_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n60_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n60_high_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n60_high_p"><text>"net60"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_n60_high"><text>contractValue * 0.13</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_n60_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_n60_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n60_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n60_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n60_high_p">
+          <text>"net60"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_n60_high">
+          <text>contractValue * 0.13</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_n60_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · individual · net90 (-1 %) -->
       <rule id="R_EMEA_ind_n90_low">
-        <inputEntry id="I_EMEA_ind_n90_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n90_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n90_low_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n90_low_p"><text>"net90"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_n90_low"><text>contractValue * 0.07</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_n90_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_n90_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n90_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n90_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n90_low_p">
+          <text>"net90"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_n90_low">
+          <text>contractValue * 0.07</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_n90_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_ind_n90_high">
-        <inputEntry id="I_EMEA_ind_n90_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n90_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n90_high_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_n90_high_p"><text>"net90"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_n90_high"><text>contractValue * 0.12</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_n90_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_n90_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n90_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n90_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_n90_high_p">
+          <text>"net90"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_n90_high">
+          <text>contractValue * 0.12</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_n90_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <!-- EMEA · individual · milestone (base) -->
       <rule id="R_EMEA_ind_mil_low">
-        <inputEntry id="I_EMEA_ind_mil_low_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_mil_low_v"><text>&lt; 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_mil_low_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_mil_low_p"><text>"milestone"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_mil_low"><text>contractValue * 0.08</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_mil_low"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_mil_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_mil_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_mil_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_mil_low_p">
+          <text>"milestone"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_mil_low">
+          <text>contractValue * 0.08</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_mil_low">
+          <text>true</text>
+        </outputEntry>
       </rule>
       <rule id="R_EMEA_ind_mil_high">
-        <inputEntry id="I_EMEA_ind_mil_high_r"><text>"EMEA"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_mil_high_v"><text>>= 10000</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_mil_high_t"><text>"individual"</text></inputEntry>
-        <inputEntry id="I_EMEA_ind_mil_high_p"><text>"milestone"</text></inputEntry>
-        <outputEntry id="O_EMEA_ind_mil_high"><text>contractValue * 0.13</text></outputEntry>
-        <outputEntry id="OA_EMEA_ind_mil_high"><text>true</text></outputEntry>
+        <inputEntry id="I_EMEA_ind_mil_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_mil_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_mil_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_mil_high_p">
+          <text>"milestone"</text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_mil_high">
+          <text>contractValue * 0.13</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_mil_high">
+          <text>true</text>
+        </outputEntry>
       </rule>
 
     </decisionTable>
   </decision>
+
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_commission" name="DRD">
+      <dmndi:DMNShape id="DMNShape_commission" dmnElementRef="DMN_salesperson_commission">
+        <dc:Bounds height="80" width="180" x="160" y="100"/>
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
 
 </definitions>

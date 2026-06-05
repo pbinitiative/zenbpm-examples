@@ -4,7 +4,6 @@ services:
   zenbpm:
     build:
       context: ../zenbpm
-      dockerfile: Dockerfile.workshop
 
   zenbpm-ui:
     build:
