@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 12,
+  "type": "default",
+  "id": "customerAcceptsOffer",
+  "components": [
+    {
+      "type": "checkbox",
+      "id": "offerAccepted",
+      "key": "offerAccepted",
+      "label": "I accept the loan offer",
+      "validate": { "required": true }
+    }
+  ]
+}

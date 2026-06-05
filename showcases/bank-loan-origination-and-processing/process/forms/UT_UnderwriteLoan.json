@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 12,
+  "type": "default",
+  "id": "underwriteLoan",
+  "components": [
+    {
+      "type": "checkbox",
+      "id": "approve_loan",
+      "key": "approve_loan",
+      "label": "Approve loan",
+      "validate": { "required": true }
+    },
+    {
+      "type": "textarea",
+      "id": "underwriterNotes",
+      "key": "underwriterNotes",
+      "label": "Underwriter notes"
+    }
+  ]
+}

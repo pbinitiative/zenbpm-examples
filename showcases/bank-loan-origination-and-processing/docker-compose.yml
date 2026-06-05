@@ -1,0 +1,84 @@
+include:
+  - ../../docker-compose.yml
+
+# NOTE: the ZenBPM service name is 'zenbpm' (defined in ../../docker-compose.yml).
+# Verify this matches if the root docker-compose.yml is ever renamed.
+
+services:
+  deploy-bank-loan:
+    image: curlimages/curl:latest
+    restart: on-failure
+    depends_on:
+      zenbpm:
+        condition: service_healthy
+    volumes:
+      - ./process:/process:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        echo "Waiting for ZenBPM API to be ready..."
+        until curl -sf http://zenbpm:8080/v1/process-definitions > /dev/null; do
+          echo "  ZenBPM not ready yet, retrying in 3s..."
+          sleep 3
+        done
+        echo "Deploying BPMN process definitions..."
+        for f in /process/*.bpmn; do
+          [ -f "$$f" ] || continue
+          echo "  -> $$f"
+          curl -sfS -X POST http://zenbpm:8080/v1/process-definitions -F "resource=@$$f"
+          echo ""
+        done
+        echo "Deploying DMN decision definitions..."
+        for f in /process/*.dmn; do
+          [ -f "$$f" ] || continue
+          echo "  -> $$f"
+          curl -sfS -X POST http://zenbpm:8080/v1/dmn-resource-definitions \
+            -H "Content-Type: application/xml" \
+            --data-binary "@$$f"
+          echo ""
+        done
+        echo "Done."
+
+  bank-loan-worker:
+    build:
+      context: ./workers/bank-loan-worker
+    restart: unless-stopped
+    environment:
+      ZENBPM_GRPC_HOST: zenbpm
+      ZENBPM_GRPC_PORT: 9090
+    depends_on:
+      zenbpm:
+        condition: service_healthy
+
+  bank-loan-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8081"
+    volumes:
+      - ./process/forms:/app/forms:ro
+    environment:
+      ZENBPM_URL: http://zenbpm:8080/v1
+      PORTAL_CORS_ALLOWED_ORIGINS: http://localhost:3001,http://localhost:5173
+      PORTAL_PROCESS_DEFAULT_KEY: Process_Loan_Origination_And_Processing
+      PORTAL_FORMS_PATH: file:/app/forms/
+    depends_on:
+      zenbpm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bank-loan-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:80"
+    depends_on:
+      bank-loan-backend:
+        condition: service_healthy

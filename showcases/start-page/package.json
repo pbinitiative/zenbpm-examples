@@ -1,0 +1,12 @@
+{
+  "name": "zenbpm-showcase-launcher",
+  "version": "1.0.0",
+  "description": "Local launcher for ZenBPM showcase applications",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

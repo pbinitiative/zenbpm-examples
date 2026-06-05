@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZenBPM Showcases</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1a202c;
+      color: #fff;
+      padding: 0 40px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo span { color: #68d391; }
+    .logo-sep { color: #4a5568; font-size: 20px; margin: 0 4px; }
+    .logo-sub { font-size: 15px; color: #a0aec0; font-weight: 400; }
+
+    main {
+      max-width: 960px;
+      margin: 48px auto;
+      padding: 0 24px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #a0aec0;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.05);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,.1), 0 12px 28px rgba(0,0,0,.07);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: #718096;
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .card-footer {
+      margin-top: 8px;
+      padding-top: 14px;
+      border-top: 1px solid #f0f4f8;
+    }
+
+    .btn-open {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 16px;
+      background: #1a202c;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .btn-open:hover { background: #2d3748; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Zen<span>BPM</span></div>
+  <div class="logo-sep">/</div>
+  <div class="logo-sub">Showcases</div>
+</header>
+
+<main>
+  <p class="section-label">Available showcases</p>
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-title">Contract Closing &amp; Commission Settlement</div>
+      <p class="card-desc">End-to-end contract closing workflow with automated commission calculation and settlement.</p>
+      <div class="card-footer">
+        <button class="btn-open" onclick="window.open('http://localhost:3000','_blank')">Open ↗</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Bank Loan Origination and Processing</div>
+      <p class="card-desc">Bank loan origination workflow covering credit scoring, underwriting, customer offer acceptance, and loan disbursement.</p>
+      <div class="card-footer">
+        <button class="btn-open" onclick="window.open('http://localhost:3001','_blank')">Open ↗</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Employee Onboarding</div>
+      <p class="card-desc">Structured employee onboarding process covering account setup, orientation, and task assignment.</p>
+      <div class="card-footer">
+        <button class="btn-open" onclick="window.open('http://localhost:3002','_blank')">Open ↗</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+</body>
+</html>
