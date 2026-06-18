@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_14ej2l1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.33.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.6.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zenbpm="http://zenbpm.pbinitiative.org/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_14ej2l1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.33.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.6.0">
   <bpmn:collaboration id="Collaboration_1v5zv9b">
     <bpmn:participant id="Participant_1kokkss" name="Client" />
     <bpmn:participant id="Participant_09fhcid" name="Happy Company Ltd." processRef="Process_Contract_Closing" />
     <bpmn:messageFlow id="Flow_1rxyimv" name="E-Mail" sourceRef="ST_SendContractToClient" targetRef="Participant_1kokkss" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_Contract_Closing" name="Contract Closing &amp; Commission Settlement" isExecutable="false">
+  <bpmn:process id="Process_Contract_Closing" name="Contract Closing &#38; Commission Settlement" isExecutable="false">
     <bpmn:laneSet id="LaneSet_12n6vz3">
       <bpmn:lane id="Lane_Salesmen" name="Salesmen">
         <bpmn:flowNodeRef>SA_ProposalAccepted</bpmn:flowNodeRef>
@@ -39,14 +39,23 @@
     </bpmn:startEvent>
     <bpmn:userTask id="UT_CreateContract" name="Create the contract">
       <bpmn:extensionElements>
-        <zeebe:userTask />
+        <zenbpm:userTask />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0bmozq6</bpmn:incoming>
       <bpmn:outgoing>Flow_1p25qj2</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:serviceTask id="ST_SendContractToClient" name="Send the contract to client">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="send-contract-to-client" />
+        <zenbpm:taskDefinition type="send-contract-to-client" />
+        <zenbpm:ioMapping>
+          <zenbpm:output source="=accountManager" target="accountManager" />
+          <zenbpm:output source="=clientName" target="clientName" />
+          <zenbpm:output source="=clientRegion" target="clientRegion" />
+          <zenbpm:output source="=contractType" target="contractType" />
+          <zenbpm:output source="=contractValue" target="contractValue" />
+          <zenbpm:output source="=paymentTerms" target="paymentTerms" />
+          <zenbpm:output source="=subject" target="subject" />
+        </zenbpm:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_126k7yc</bpmn:incoming>
       <bpmn:outgoing>Flow_13lsbot</bpmn:outgoing>
@@ -60,7 +69,10 @@
     <bpmn:dataObject id="DataObject_0jayppx" />
     <bpmn:businessRuleTask id="BRT_DetermineCommission" name="Determine the commission">
       <bpmn:extensionElements>
-        <zeebe:calledDecision decisionId="DMN_salesperson_commission" resultVariable="commission" />
+        <zenbpm:calledDecision decisionId="DMN_salesperson_commission" resultVariable="commission" />
+        <zenbpm:ioMapping>
+          <zenbpm:output source="=commission" target="commission" />
+        </zenbpm:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_13lsbot</bpmn:incoming>
       <bpmn:outgoing>Flow_0dvanp3</bpmn:outgoing>
@@ -72,7 +84,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:userTask id="UT_ShowCommission" name="Show commission">
       <bpmn:extensionElements>
-        <zeebe:userTask />
+        <zenbpm:userTask />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_no_approval</bpmn:incoming>
       <bpmn:incoming>Flow_approval_done</bpmn:incoming>
@@ -83,14 +95,24 @@
     </bpmn:endEvent>
     <bpmn:userTask id="UT_SignContract" name="Electronically sign the contract">
       <bpmn:extensionElements>
-        <zeebe:userTask />
+        <zenbpm:userTask />
+        <zenbpm:ioMapping>
+          <zenbpm:output source="=accountManager" target="accountManager" />
+          <zenbpm:output source="=clientName" target="clientName" />
+          <zenbpm:output source="=clientRegion" target="clientRegion" />
+          <zenbpm:output source="=contractType" target="contractType" />
+          <zenbpm:output source="=contractValue" target="contractValue" />
+          <zenbpm:output source="=paymentTerms" target="paymentTerms" />
+          <zenbpm:output source="=subject" target="subject" />
+        </zenbpm:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1p25qj2</bpmn:incoming>
       <bpmn:outgoing>Flow_126k7yc</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:userTask id="UT_ManagerApproval" name="Approve the commission">
       <bpmn:extensionElements>
-        <zeebe:userTask />
+        <zenbpm:userTask />
+        <zenbpm:ioMapping />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_needs_approval</bpmn:incoming>
       <bpmn:outgoing>Flow_approval_done</bpmn:outgoing>
