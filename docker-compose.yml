@@ -5,7 +5,7 @@
 
 services:
   zenbpm:
-    image: ghcr.io/pbinitiative/zenbpm:v1.3.0
+    image: ghcr.io/pbinitiative/zenbpm:v1.4.0
     environment:
       - CONFIG_FILE=/var/zenbpm/zen-conf.yaml
     volumes:
@@ -21,7 +21,7 @@ services:
       start_period: 10s
 
   zenbpm-ui:
-    image: ghcr.io/pbinitiative/zenbpm-ui:v1.3.0
+    image: ghcr.io/pbinitiative/zenbpm-ui:v1.4.0
     ports:
       - "9000:80"
     depends_on:

@@ -5,16 +5,16 @@
     <bpmn:participant id="Participant_09fhcid" name="Happy Company Ltd." processRef="Process_Contract_Closing" />
     <bpmn:messageFlow id="Flow_1rxyimv" name="E-Mail" sourceRef="ST_SendContractToClient" targetRef="Participant_1kokkss" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_Contract_Closing" name="Contract Closing &#38; Commission Settlement" isExecutable="false">
+  <bpmn:process id="Process_Contract_Closing" name="Contract Closing &#38; Commission Settlement" isExecutable="true">
     <bpmn:laneSet id="LaneSet_12n6vz3">
       <bpmn:lane id="Lane_Salesmen" name="Salesmen">
-        <bpmn:flowNodeRef>SA_ProposalAccepted</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>UT_CreateContract</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ST_SendContractToClient</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BRT_DetermineCommission</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>GW_ApprovalRequired</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>UT_ShowCommission</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EE_ContractRegistered</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SA_ProposalAccepted</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Director" name="Director">
         <bpmn:flowNodeRef>UT_SignContract</bpmn:flowNodeRef>
@@ -34,12 +34,18 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_approval_done" sourceRef="UT_ManagerApproval" targetRef="UT_ShowCommission" />
     <bpmn:sequenceFlow id="Flow_0ppo514" sourceRef="UT_ShowCommission" targetRef="EE_ContractRegistered" />
-    <bpmn:startEvent id="SA_ProposalAccepted" name="Client accepted the proposal">
-      <bpmn:outgoing>Flow_0bmozq6</bpmn:outgoing>
-    </bpmn:startEvent>
     <bpmn:userTask id="UT_CreateContract" name="Create the contract">
       <bpmn:extensionElements>
         <zenbpm:userTask />
+        <zenbpm:ioMapping>
+          <zenbpm:output source="=accountManager" target="accountManager" />
+          <zenbpm:output source="=clientName" target="clientName" />
+          <zenbpm:output source="=clientRegion" target="clientRegion" />
+          <zenbpm:output source="=contractType" target="contractType" />
+          <zenbpm:output source="=contractValue" target="contractValue" />
+          <zenbpm:output source="=paymentTerms" target="paymentTerms" />
+          <zenbpm:output source="=subject" target="subject" />
+        </zenbpm:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0bmozq6</bpmn:incoming>
       <bpmn:outgoing>Flow_1p25qj2</bpmn:outgoing>
@@ -96,15 +102,6 @@
     <bpmn:userTask id="UT_SignContract" name="Electronically sign the contract">
       <bpmn:extensionElements>
         <zenbpm:userTask />
-        <zenbpm:ioMapping>
-          <zenbpm:output source="=accountManager" target="accountManager" />
-          <zenbpm:output source="=clientName" target="clientName" />
-          <zenbpm:output source="=clientRegion" target="clientRegion" />
-          <zenbpm:output source="=contractType" target="contractType" />
-          <zenbpm:output source="=contractValue" target="contractValue" />
-          <zenbpm:output source="=paymentTerms" target="paymentTerms" />
-          <zenbpm:output source="=subject" target="subject" />
-        </zenbpm:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1p25qj2</bpmn:incoming>
       <bpmn:outgoing>Flow_126k7yc</bpmn:outgoing>
@@ -117,6 +114,9 @@
       <bpmn:incoming>Flow_needs_approval</bpmn:incoming>
       <bpmn:outgoing>Flow_approval_done</bpmn:outgoing>
     </bpmn:userTask>
+    <bpmn:startEvent id="SA_ProposalAccepted" name="Client accepted the proposal">
+      <bpmn:outgoing>Flow_0bmozq6</bpmn:outgoing>
+    </bpmn:startEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1v5zv9b">
@@ -135,12 +135,6 @@
       <bpmndi:BPMNShape id="Lane_1xhweb8_di" bpmnElement="Lane_Salesmen" isHorizontal="true">
         <dc:Bounds x="190" y="172" width="1050" height="278" />
         <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_06a6in5_di" bpmnElement="SA_ProposalAccepted">
-        <dc:Bounds x="252" y="244" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="232" y="287" width="76" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_00wh041_di" bpmnElement="UT_CreateContract">
         <dc:Bounds x="340" y="222" width="100" height="80" />
@@ -182,8 +176,14 @@
         <dc:Bounds x="900" y="490" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_06a6in5_di" bpmnElement="SA_ProposalAccepted">
+        <dc:Bounds x="272" y="244" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="252" y="287" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0bmozq6_di" bpmnElement="Flow_0bmozq6">
-        <di:waypoint x="288" y="262" />
+        <di:waypoint x="308" y="262" />
         <di:waypoint x="340" y="262" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1p25qj2_di" bpmnElement="Flow_1p25qj2">
