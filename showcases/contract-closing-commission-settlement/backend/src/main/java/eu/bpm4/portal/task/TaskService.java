@@ -87,22 +87,21 @@ public class TaskService {
         }
 
         // Collect unique processInstanceKeys and resolve processDefinitionKeys
-        Map<String, String> instanceKeyToDefinitionKey = jobs.stream()
+        Map<String, String> instanceKeyToDefinitionKey = new HashMap<>();
+        jobs.stream()
                 .map(JobResponse::getProcessInstanceKey)
                 .filter(k -> k != null)
                 .distinct()
-                .collect(Collectors.toMap(
-                        instanceKey -> instanceKey,
-                        instanceKey -> {
-                            try {
-                                ProcessInstanceResponse instance = zenBpmClient.fetchProcessInstance(instanceKey);
-                                return instance != null ? instance.getProcessDefinitionKey() : null;
-                            } catch (Exception e) {
-                                log.warn("Could not fetch process instance {}: {}", instanceKey, e.getMessage());
-                                return null;
-                            }
+                .forEach(instanceKey -> {
+                    try {
+                        ProcessInstanceResponse instance = zenBpmClient.fetchProcessInstance(instanceKey);
+                        if (instance != null && instance.getProcessDefinitionKey() != null) {
+                            instanceKeyToDefinitionKey.put(instanceKey, instance.getProcessDefinitionKey());
                         }
-                ));
+                    } catch (Exception e) {
+                        log.warn("Could not fetch process instance {}: {}", instanceKey, e.getMessage());
+                    }
+                });
 
         // Collect unique processDefinitionKeys and resolve BPMN element name maps
         Map<String, Map<String, String>> definitionKeyToNameMap = instanceKeyToDefinitionKey.values().stream()
