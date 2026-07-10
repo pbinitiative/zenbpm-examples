@@ -1,6 +1,7 @@
 package eu.bpm4.portal.zenbpm.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,5 +18,7 @@ public class JobResponse {
     private String assignee;
     private String createdAt;
     private String type;
+
+    @JsonProperty("inputVariables")
     private Map<String, Object> variables;
 }

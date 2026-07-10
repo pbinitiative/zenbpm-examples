@@ -22,9 +22,3 @@ cluster:
     js:
       maxVmPoolSize: 10
       minVmPoolSize: 2
-# tracing:
-#   enabled: true
-#   endpoint: localhost:4318
-#   name: ZenBPM
-#   transferHeaders:
-#     - x-my-custom-header
