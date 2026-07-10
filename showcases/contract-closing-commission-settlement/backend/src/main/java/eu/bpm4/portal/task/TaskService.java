@@ -71,7 +71,10 @@ public class TaskService {
                 String filename = resource.getFilename();
                 if (filename == null) continue;
                 String elementId = filename.substring(0, filename.lastIndexOf('.'));
-                String json = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                String json;
+                try (var inputStream = resource.getInputStream()) {
+                    json = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                }
                 formsByElementId.put(elementId, json);
                 log.info("Loaded form schema for element '{}' ({} bytes)", elementId, json.length());
             }
