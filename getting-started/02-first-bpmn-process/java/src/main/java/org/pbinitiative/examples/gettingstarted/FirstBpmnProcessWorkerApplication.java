@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * gRPC on startup (see application.yml) and registers every @JobWorker bean.
  */
 @SpringBootApplication
-public class HelloWorldWorkerApplication {
+public class FirstBpmnProcessWorkerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(HelloWorldWorkerApplication.class, args);
+        SpringApplication.run(FirstBpmnProcessWorkerApplication.class, args);
     }
 }

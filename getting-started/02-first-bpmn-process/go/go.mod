@@ -1,4 +1,4 @@
-module hello-world-worker
+module first-bpmn-process-worker
 
 go 1.22
 

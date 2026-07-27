@@ -4,16 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pbinitiative/zenbpm/pkg/proto"
 	"github.com/pbinitiative/zenbpm/pkg/zenclient"
+	"github.com/pbinitiative/zenbpm/pkg/zenclient/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// Handles the "log-worker" service task of the hello-world process: reads the
+// Handles the "log-worker" service task of the first-bpmn-process: reads the
 // "log" variable, prints it, and completes the job so the instance can finish.
-//
-// verify: proto import path against the zenclient release.
 func main() {
 	conn, err := grpc.NewClient(
 		"127.0.0.1:9090",
@@ -27,7 +25,7 @@ func main() {
 	zen := zenclient.NewGrpc(conn)
 
 	// Subscribe to "log-worker" jobs.
-	zen.RegisterWorker(context.Background(), "hello-world-worker",
+	zen.RegisterWorker(context.Background(), "first-bpmn-process-worker",
 		func(ctx context.Context, job *proto.WaitingJob) (map[string]any, *zenclient.WorkerError) {
 			fmt.Printf("[log-worker] %v\n", job.GetVariables()["log"])
 			return map[string]any{}, nil // no output variables; job complete

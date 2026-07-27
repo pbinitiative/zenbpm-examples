@@ -1,19 +1,17 @@
 package org.pbinitiative.examples.gettingstarted;
 
 import org.springframework.stereotype.Component;
-import org.zenbpm.grpc.JobWorker;
-import org.zenbpm.grpc.JobContext;
+import org.pbinitiative.zenbpm.grpc.JobContext;
+import org.pbinitiative.zenbpm.grpc.JobWorker;
 
 import java.util.Map;
 
 /**
- * Handles the "log-worker" service task of the hello-world process.
+ * Handles the "log-worker" service task of the first-bpmn-process.
  *
  * When a process instance reaches the "Log Greeting" task, the engine creates a
  * job of type "log-worker" and waits. This method picks it up, reads the "log"
  * variable, prints it, and completes the job so the instance can finish.
- *
- * verify: JobWorker/JobContext package names against the zenbpm-java-client release.
  */
 @Component
 public class LogWorker {

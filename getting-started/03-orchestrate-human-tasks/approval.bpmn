@@ -7,35 +7,35 @@
   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
   id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn"
   exporter="ZenBPM Modeler" exporterVersion="1.0.0">
-  <bpmn:process id="hello-world-process" name="Hello World" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1" name="Start">
+  <bpmn:process id="approval-process" name="Approval" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Request received">
       <bpmn:outgoing>Flow_1</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="Task_Log" name="Log Greeting">
+    <bpmn:userTask id="Task_Approve" name="Approve request">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="log-worker" />
+        <zeebe:userTask />
         <zeebe:ioMapping>
-          <zeebe:input source="Hello, World!" target="log" />
+          <zeebe:input source="Please approve or reject this request" target="instruction" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1</bpmn:incoming>
       <bpmn:outgoing>Flow_2</bpmn:outgoing>
-    </bpmn:serviceTask>
+    </bpmn:userTask>
     <bpmn:endEvent id="EndEvent_1" name="Done">
       <bpmn:incoming>Flow_2</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_Log" />
-    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Log" targetRef="EndEvent_1" />
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_Approve" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Approve" targetRef="EndEvent_1" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="hello-world-process">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="approval-process">
       <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="182" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="188" y="145" width="24" height="14" />
+          <dc:Bounds x="160" y="145" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Log_di" bpmnElement="Task_Log">
+      <bpmndi:BPMNShape id="Task_Approve_di" bpmnElement="Task_Approve">
         <dc:Bounds x="270" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
