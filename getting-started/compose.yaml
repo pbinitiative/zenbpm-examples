@@ -1,0 +1,52 @@
+# ZenBPM engine — shared by every chapter of the Getting Started track.
+# Run these commands from this (getting-started/) folder.
+#
+# Start:   docker compose up -d
+# Verify:  curl http://localhost:8080/v1/process-definitions   (empty list = healthy)
+# Stop:    docker compose down
+#
+# This runs ONLY the engine. Workers are something you write and run yourself
+# (see 02-first-bpmn-process) — that is the whole point of the tutorial. The
+# optional UI is off by default; enable it with:  docker compose --profile ui up -d
+
+# Project name shown by `docker compose ls` / `docker ps` groupings.
+name: zenbpm-getting-started
+
+services:
+  zenbpm:
+    # Pinned: :latest currently resolves to a 1.0.0 dev build whose key encoding is
+    # incompatible with this config (process-instance lookups fail with
+    # "partition not found"). v1.6.0 matches the docs and the OpenAPI examples.
+    image: ghcr.io/pbinitiative/zenbpm:v1.6.0
+    container_name: zenbpm
+    environment:
+      # Required: without a config the engine has no partitions and process-instance
+      # calls fail with "partition not found". This config bootstraps a single node.
+      - CONFIG_FILE=/var/zenbpm/zen-conf.yaml
+    volumes:
+      - ./conf/zenbpm/conf.yaml:/var/zenbpm/zen-conf.yaml
+      # Persist engine state (Raft + rqlite data) so instances survive restarts.
+      # `docker compose down` keeps this volume; use `down -v` to wipe it.
+      - zenbpm-data:/node-1
+    ports:
+      - "8080:8080"   # REST API
+      - "9090:9090"   # gRPC (workers)
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8080'"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  zenbpm-ui:
+    image: ghcr.io/pbinitiative/zenbpm-ui:v1.6.0
+    container_name: zenbpm-ui
+    profiles: ["ui"]          # optional: docker compose --profile ui up -d
+    ports:
+      - "9000:80"             # http://localhost:9000
+    depends_on:
+      zenbpm:
+        condition: service_healthy
+
+volumes:
+  zenbpm-data:

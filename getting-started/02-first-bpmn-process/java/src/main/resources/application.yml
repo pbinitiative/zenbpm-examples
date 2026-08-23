@@ -1,0 +1,6 @@
+# Where the worker finds the engine. These match the ports from 01-run-the-engine.
+zenbpm:
+  grpcHost: localhost
+  grpcPort: 9090
+  grpcPlaintext: true      # local/dev only; use TLS in production
+  jobWorkerEnabled: true   # connect and register @JobWorker beans on startup
