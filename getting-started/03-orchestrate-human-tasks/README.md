@@ -13,7 +13,7 @@ A **user task** surfaces at the engine as a job of type `user-task`. You list it
 
 | Path | What it is |
 |---|---|
-| `approval.bpmn` | The process definition you deploy |
+| `approval-process.bpmn` | The process definition you deploy |
 
 There is no `java/` or `go/` folder here: a user task has no worker. The Java and Go clients *can* drive user tasks (see the docs), but the core flow is the REST calls below.
 
@@ -26,7 +26,7 @@ There is no `java/` or `go/` folder here: a user task has no worker. The Java an
 
 ```bash
 curl -X POST http://localhost:8080/v1/process-definitions \
-  -F "resource=@approval.bpmn"
+  -F "resource=@approval-process.bpmn"
 ```
 
 Note the returned `processDefinitionKey`.
