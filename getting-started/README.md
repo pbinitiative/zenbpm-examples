@@ -8,7 +8,7 @@ The engine is defined once in [`compose.yaml`](compose.yaml) at the root of this
 |---|---|---|
 | [`01-run-the-engine/`](01-run-the-engine/) | Run the engine | How to start the shared engine (`compose.yaml`). No code. |
 | [`02-first-bpmn-process/`](02-first-bpmn-process/) | First BPMN process | The `first-bpmn-process.bpmn` process and a **worker** in both Java and Go. You deploy the process manually and run the worker. |
-| [`03-orchestrate-human-tasks/`](03-orchestrate-human-tasks/) | Orchestrate human tasks | The `approval.bpmn` process with a user task. You deploy it and complete the task over REST — no worker. |
+| [`03-orchestrate-human-tasks/`](03-orchestrate-human-tasks/) | Orchestrate human tasks | The `approval-process.bpmn` process with a user task. You deploy it and complete the task over REST — no worker. |
 
 ## How the pieces fit
 
