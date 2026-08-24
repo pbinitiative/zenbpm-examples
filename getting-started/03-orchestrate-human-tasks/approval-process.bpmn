@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Process_d0e3509b" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ZenBPM Modeler" exporterVersion="1.0.0">
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zenbpm="http://zenbpm.pbinitiative.org/1.0" id="Definitions_Process_d0e3509b" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ZenBPM Modeler" exporterVersion="1.0.0">
   <bpmn:process id="approval-process" name="Approval Process" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="Request received">
       <bpmn:outgoing>Flow_1unjgas</bpmn:outgoing>
@@ -10,6 +10,11 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0nbgcxa" sourceRef="Activity_1dyxkwc" targetRef="Event_10w6z1z" />
     <bpmn:userTask id="Activity_1dyxkwc" name="Approve Request">
+      <bpmn:extensionElements>
+        <zenbpm:ioMapping>
+          <zenbpm:input source="=&#34;{\&#34;schemaVersion\&#34;:12,\&#34;type\&#34;:\&#34;default\&#34;,\&#34;id\&#34;:\&#34;approveRequest\&#34;,\&#34;components\&#34;:[{\&#34;type\&#34;:\&#34;text\&#34;,\&#34;id\&#34;:\&#34;instructions\&#34;,\&#34;text\&#34;:\&#34;Review the request and decide whether to approve it.\&#34;},{\&#34;type\&#34;:\&#34;checkbox\&#34;,\&#34;id\&#34;:\&#34;approved\&#34;,\&#34;key\&#34;:\&#34;approved\&#34;,\&#34;label\&#34;:\&#34;I approve this request\&#34;}]}&#34;" target="ZEN_FORM" />
+        </zenbpm:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_1unjgas</bpmn:incoming>
       <bpmn:outgoing>Flow_0nbgcxa</bpmn:outgoing>
     </bpmn:userTask>
