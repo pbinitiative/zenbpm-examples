@@ -26,9 +26,19 @@ net30      :  0 %
 net60      :  0 %
 net90      : -1 %   (delayed payment risk)
 milestone  :  0 %
+
+Fallbacks (hitPolicy FIRST, evaluated after every rule above):
+- EMEA with missing/unknown paymentTerms  -> base rate (no adjustment), approvalRequired = true
+- any region with a numeric contractValue -> 5 % base,                   approvalRequired = true
+- anything else (e.g. contractValue null) -> commission 0,               approvalRequired = true
+A result is therefore never null.
 -->
   <decision id="DMN_salesperson_commission" name="Setting the salesperson's commission">
-    <decisionTable id="DecisionTable_commission" hitPolicy="UNIQUE">
+    <!-- FIRST: rules are evaluated top-to-bottom, first match wins.
+         All the specific rules below are mutually exclusive (so they behave
+         exactly as under UNIQUE), and the fallback rules at the very end only
+         fire when nothing above matched — guaranteeing a non-null result. -->
+    <decisionTable id="DecisionTable_commission" hitPolicy="FIRST">
 
       <input id="InputClause_region" label="Client Region">
         <inputExpression id="LE_region" typeRef="string">
@@ -1046,6 +1056,198 @@ prepayment +1 %, net90 -1 %, net30/net60/milestone 0 %
           <text>contractValue * 0.13</text>
         </outputEntry>
         <outputEntry id="OA_EMEA_ind_mil_high">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+
+      <!-- ═══════════════════════════════════════════════════
+FALLBACKS  (reached only when no rule above matched — hitPolicy FIRST)
+═══════════════════════════════════════════════════ -->
+
+      <!-- EMEA · missing / unknown Payment Terms → base rate, no adjustment
+           (same as net30 / net60 / milestone), flagged for approval -->
+      <rule id="R_EMEA_std_fallback_low">
+        <inputEntry id="I_EMEA_std_fb_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_fb_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_fb_low_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_fb_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_fb_low">
+          <text>contractValue * 0.05</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_fb_low">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="R_EMEA_std_fallback_high">
+        <inputEntry id="I_EMEA_std_fb_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_fb_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_fb_high_t">
+          <text>"standard"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_std_fb_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_std_fb_high">
+          <text>contractValue * 0.10</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_std_fb_high">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="R_EMEA_frm_fallback_low">
+        <inputEntry id="I_EMEA_frm_fb_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_fb_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_fb_low_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_fb_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_fb_low">
+          <text>contractValue * 0.07</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_fb_low">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="R_EMEA_frm_fallback_high">
+        <inputEntry id="I_EMEA_frm_fb_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_fb_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_fb_high_t">
+          <text>"framework"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_frm_fb_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_frm_fb_high">
+          <text>contractValue * 0.12</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_frm_fb_high">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="R_EMEA_ind_fallback_low">
+        <inputEntry id="I_EMEA_ind_fb_low_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_fb_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_fb_low_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_fb_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_fb_low">
+          <text>contractValue * 0.08</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_fb_low">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="R_EMEA_ind_fallback_high">
+        <inputEntry id="I_EMEA_ind_fb_high_r">
+          <text>"EMEA"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_fb_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_fb_high_t">
+          <text>"individual"</text>
+        </inputEntry>
+        <inputEntry id="I_EMEA_ind_fb_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_EMEA_ind_fb_high">
+          <text>contractValue * 0.13</text>
+        </outputEntry>
+        <outputEntry id="OA_EMEA_ind_fb_high">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Region known but Contract Value present → generic 5 % base, approval required -->
+      <rule id="R_fallback_value_low">
+        <inputEntry id="I_fb_val_low_r">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="I_fb_val_low_v">
+          <text>&lt; 10000</text>
+        </inputEntry>
+        <inputEntry id="I_fb_val_low_t">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="I_fb_val_low_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_fb_val_low">
+          <text>contractValue * 0.05</text>
+        </outputEntry>
+        <outputEntry id="OA_fb_val_low">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="R_fallback_value_high">
+        <inputEntry id="I_fb_val_high_r">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="I_fb_val_high_v">
+          <text>>= 10000</text>
+        </inputEntry>
+        <inputEntry id="I_fb_val_high_t">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="I_fb_val_high_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_fb_val_high">
+          <text>contractValue * 0.05</text>
+        </outputEntry>
+        <outputEntry id="OA_fb_val_high">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Ultimate catch-all: anything else (e.g. Contract Value also null / non-numeric).
+           Literal 0 so the result is never null; always sent for manual approval. -->
+      <rule id="R_fallback_any">
+        <inputEntry id="I_fb_any_r">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="I_fb_any_v">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="I_fb_any_t">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="I_fb_any_p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="O_fb_any">
+          <text>0</text>
+        </outputEntry>
+        <outputEntry id="OA_fb_any">
           <text>true</text>
         </outputEntry>
       </rule>
